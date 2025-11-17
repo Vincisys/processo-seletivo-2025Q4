@@ -130,7 +130,9 @@ Use **SQLAlchemy + SQLite**.
 
 Crie bancos e tabelas seguindo as estruturas acima.
 
-Rotas exigidas:
+IDs devem passar a ser gerados automaticamente. IDs não devem ser aceitos como parâmetros em recursos de criacao.
+
+Rotas exigidas (itere sobre a rota criada anteriormente):
 
 - `POST /integrations/asset`
 - `GET /integrations/asset/:id`
@@ -145,6 +147,8 @@ Rotas exigidas:
 ### Nível 3 — Testes
 
 Crie testes unitários para cada módulo.
+
+Utilize **pytest**. Se possível verifique a cobertura de testes e adicione no README.
 
 ---
 
@@ -169,7 +173,7 @@ Todas as rotas devem exigir o token via Header.
 
 ---
 
-### Nível 5 — Permissões
+### Nível 5 — Usuários
 
 Crie entidade de **usuários** para autenticação.
 Refatore o login para validar via banco.
@@ -188,9 +192,15 @@ Refatore o login para validar via banco.
 
 #### Nota: Os dados deste nível podem ser _mockados_.
 
+<<<<<<< HEAD
+
 - Criar tela de cadastro e listagem de responsáveis, seguindo os campos indicados na [definição do problema](#-💻-O-Problema).
 - Criar tela de cadastro e listagem de ativos, também de acordo com os campos da definição do problema. O campo _owner_ _NÃO_ deve ser apresentado aqui.
 - Validação de campos obrigatórios. Note que a comunicação com o back-end não é mandatória neste nível.
+  ||||||| df03738
+  Utilize **React** para construir o front-end.
+  =======
+  > > > > > > > main
 
 Utilize **React** para construir o front-end. Bibliotecas de gerenciamento de estado e componentes de UI são diferenciais, mas opcionais.
 
