@@ -187,6 +187,8 @@ Refatore o login para validar via banco.
 
 Criar tela de cadastro de ativo e tela de cadastro de responsável.
 
+Utilize **React** para construir o front-end.
+
 Validação de campos obrigatórios.
 
 ---
