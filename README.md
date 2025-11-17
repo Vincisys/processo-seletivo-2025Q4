@@ -27,9 +27,9 @@
   - [Nível 6 — Infra e Doc](#nível-6--infra-e-doc)
 
 - [🖥️ Front-end](#️-front-end)
-  - [Nível 1 — Cadastro](#nível-1--cadastro)
+  - [Nível 1 — Cadastros e Listagens](#-Nível-1-—-Cadastros-e-Listagens)
   - [Nível 2 — Conectando na API](#nível-2--conectando-na-api)
-  - [Nível 3 — Listagens](#nível-3--listagens)
+  - [Nível 3 — Melhoria nas Listagens](#nível-3--Melhoria-nas-Listagens)
   - [Nível 4 — Autenticação](#nível-4--autenticação-1)
   - [Nível 5 — Testes](#nível-5--testes-1)
 
@@ -192,15 +192,9 @@ Refatore o login para validar via banco.
 
 #### Nota: Os dados deste nível podem ser _mockados_.
 
-<<<<<<< HEAD
-
 - Criar tela de cadastro e listagem de responsáveis, seguindo os campos indicados na [definição do problema](#-💻-O-Problema).
 - Criar tela de cadastro e listagem de ativos, também de acordo com os campos da definição do problema. O campo _owner_ _NÃO_ deve ser apresentado aqui.
 - Validação de campos obrigatórios. Note que a comunicação com o back-end não é mandatória neste nível.
-  ||||||| df03738
-  Utilize **React** para construir o front-end.
-  =======
-  > > > > > > > main
 
 Utilize **React** para construir o front-end. Bibliotecas de gerenciamento de estado e componentes de UI são diferenciais, mas opcionais.
 
