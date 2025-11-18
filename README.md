@@ -210,7 +210,8 @@ Utilize [axios](https://axios-http.com/docs/intro) como biblioteca de comunicaç
 
 ### Nível 3 — Melhoria nas Listagens
 
-Neste nível, implemente uma página de detalhes para os itens da listagem e as ações de editar e excluir recursos. Deve conter o nome do responsável.
+Neste nível, implemente uma página de detalhes para os itens da listagem e as ações de editar e excluir recursos.
+A página de detalhes de ativos deve conter o nome do responsável.
 
 #### Nota: Cuidados com a UX, como confirmação em ações destruitivas e feedback de operações, são diferenciais.
 
