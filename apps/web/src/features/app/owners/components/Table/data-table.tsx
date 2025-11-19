@@ -1,6 +1,4 @@
-import { useState } from "react";
 import { ownerFields } from "./columns";
-import type { Owner } from "@/domain/owners/models/owner_model";
 import {
   Table,
   TableBody,
@@ -9,7 +7,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import CustomizeTableSheet from "./sheet-table";
+import type { Owner } from "../../types/owner";
+import CreateOwnerSheet from "../Sheets/create-owner-sheet";
+import { Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { deleteOwner } from "../../services/owner";
+import { toast } from "sonner";
 
 export function OwnerDataTable({
   owners,
@@ -18,21 +22,29 @@ export function OwnerDataTable({
   owners: Array<Owner>;
   isLoading: boolean;
 }) {
-  const [selectedColumns, setSelectedColumns] = useState<Array<string>>([
-    "fullName",
-    "cpf",
-    "cns",
-    "biologicalSex",
-    "birthdate",
-    "contactPhone",
-  ]);
+  const queryClient = useQueryClient();
 
-  const toggleColumn = (columnKey: string) => {
-    setSelectedColumns((prev) =>
-      prev.includes(columnKey)
-        ? prev.filter((key) => key !== columnKey)
-        : [...prev, columnKey]
-    );
+  const deleteOwnerMutation = useMutation({
+    mutationFn: (ownerId: string) => deleteOwner(ownerId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["owners"] });
+      toast.success("Responsável deletado com sucesso!");
+    },
+    onError: (error: any) => {
+      const errorMessage =
+        error.response?.data?.detail || "Erro ao deletar responsável";
+      toast.error(errorMessage);
+    },
+  });
+
+  const handleDelete = (owner: Owner) => {
+    if (
+      window.confirm(
+        `Tem certeza que deseja deletar o responsável "${owner.name}"?`
+      )
+    ) {
+      deleteOwnerMutation.mutate(owner.id);
+    }
   };
 
   if (isLoading) {
@@ -81,15 +93,13 @@ export function OwnerDataTable({
         <span className="text-gray-700 text-base">
           {owners.length} registros encontrados
         </span>
-        <CustomizeTableSheet
-          selectedColumns={selectedColumns}
-          fields={ownerFields}
-          toggleColumn={toggleColumn}
-        />
+        <div className="flex items-center gap-2">
+          <CreateOwnerSheet />
+        </div>
       </div>
       <div className="overflow-x-auto rounded-lg border">
         <Table className=" border-gray-300 p-0">
-          <TableHeader className="!bg-[#f2f7fd]">
+          <TableHeader className="bg-[#f2f7fd]!">
             <TableRow>
               {ownerFields.map((column) => (
                 <TableHead
@@ -100,26 +110,36 @@ export function OwnerDataTable({
                   {column.label}
                 </TableHead>
               ))}
+              <TableHead className="whitespace-nowrap font-semibold text-gray-700 text-base py-3 px-4 w-20">
+                Ações
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {owners.map((owner, index: number) => (
-              <TableRow key={index} className="hover:bg-gray-50">
+              <TableRow key={owner.id || index} className="hover:bg-gray-50">
                 {ownerFields.map((column) => {
                   const value = owner[column.key as keyof Owner];
-                  const formattedValue = column.formatter
-                    ? column.formatter(value)
-                    : (value as string);
-
                   return (
                     <TableCell
                       key={column.key}
                       className="whitespace-nowrap text-base"
                     >
-                      {formattedValue}
+                      {value}
                     </TableCell>
                   );
                 })}
+                <TableCell className="whitespace-nowrap text-base">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleDelete(owner)}
+                    disabled={deleteOwnerMutation.isPending}
+                    className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
