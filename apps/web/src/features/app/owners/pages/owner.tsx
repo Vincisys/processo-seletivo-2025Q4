@@ -1,18 +1,42 @@
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { OwnerDataTable } from "../components/Table/data-table";
+import { useQuery } from "@tanstack/react-query";
+import { getAllOwners } from "../services/owner";
 
 export function OwnerPage() {
+  const { data: owners, isLoading } = useQuery({
+    queryKey: ["owners"],
+    queryFn: () => getAllOwners(),
+  });
+
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center p-4">
-      <Card className="w-full max-w-md p-6">
-        <div className="mb-6 space-y-2 text-center">
-          <h1 className="text-2xl font-bold">Responsáveis</h1>
-          <p className="text-muted-foreground">
-            Gerencie os responsáveis do sistema
-          </p>
-        </div>
-        <OwnerDataTable owners={[]} isLoading={false} />
+    <div className="flex flex-col gap-4 p-4">
+      <div className="mb-6 space-y-2">
+        <h1 className="text-2xl font-bold">Responsáveis</h1>
+        <p className="text-muted-foreground">
+          Gerencie os responsáveis do sistema
+        </p>
+      </div>
+      <Card>
+        <CardContent className="flex flex-row">
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/7486/7486747.png"
+            width={150}
+            height={150}
+          />
+          <div className="flex flex-col gap-2 px-4">
+            <CardHeader className="text-2xl font-bold p-0">
+              Titulo do Card
+            </CardHeader>
+            <span>
+              Existe uma teoria que diz que, se um dia alguém descobrir
+              exatamente para que serve o Universo e por que ele está aqui, ele
+              desaparecerá instantaneamente.
+            </span>
+          </div>
+        </CardContent>
       </Card>
+      <OwnerDataTable owners={owners || []} isLoading={isLoading || false} />
     </div>
   );
 }

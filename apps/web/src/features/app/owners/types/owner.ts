@@ -16,3 +16,9 @@ export interface OwnerUpdate {
   email?: string;
   phone?: string;
 }
+
+export type OwnerField = {
+  label: string;
+  key: string;
+  width: string;
+};
