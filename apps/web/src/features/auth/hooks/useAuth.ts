@@ -1,11 +1,11 @@
-import { useRouter } from "@tanstack/react-router";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "sonner";
 import type { LoginCredentials } from "../services/auth.service";
 import { authService } from "../services/auth.service";
 
 export function useAuth() {
-  const router = useRouter();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
   const login = async (credentials: LoginCredentials) => {
@@ -15,7 +15,7 @@ export function useAuth() {
       authService.saveToken(response.access_token, response.expires_in);
 
       toast.success("Login realizado com sucesso");
-      router.navigate({ to: "/app/owner" as any });
+      navigate("/app/owner");
     } catch (error: unknown) {
       const message =
         error instanceof Error
@@ -31,7 +31,7 @@ export function useAuth() {
   const logout = () => {
     authService.logout();
     toast.success("Logout realizado com sucesso");
-    window.location.href = "/auth/login";
+    navigate("/auth/login");
   };
 
   const isAuthenticated = () => {

@@ -1,7 +1,7 @@
 import { api } from "@/lib/api";
 
 export interface LoginCredentials {
-  email: string;
+  login: string;
   password: string;
 }
 
@@ -13,7 +13,10 @@ export interface LoginResponse {
 
 export const authService = {
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
-    const response = await api.post<LoginResponse>("/auth/login", credentials);
+    const response = await api.post<LoginResponse>(
+      "/integrations/auth",
+      credentials
+    );
     return response.data;
   },
 

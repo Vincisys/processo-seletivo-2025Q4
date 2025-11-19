@@ -1,5 +1,5 @@
 import { redirect } from "@tanstack/react-router";
-import { authService } from "../services/auth.service";
+import { authService } from "../features/auth/services/auth.service";
 
 const PUBLIC_ROUTES = [
   {
