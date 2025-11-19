@@ -1,0 +1,452 @@
+# EyesOnAsset API - Backend
+
+API REST para gestão de ativos físicos e seus responsáveis, desenvolvida com FastAPI e SQLAlchemy.
+
+![Tests](https://img.shields.io/badge/tests-75%20passed-success)
+![Coverage](https://img.shields.io/badge/coverage-91%25-brightgreen)
+![Python](https://img.shields.io/badge/python-3.10+-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.109.0-009688)
+
+## 📋 Requisitos
+
+- Python 3.10+
+- SQLite (incluído no Python)
+
+## 🚀 Setup do Projeto
+
+### 1. Criar e ativar ambiente virtual
+
+```bash
+# No diretório raiz do projeto
+python3 -m venv .venv
+source .venv/bin/activate  # Linux/Mac
+# ou
+.venv\Scripts\activate  # Windows
+```
+
+### 2. Instalar dependências
+
+```bash
+cd backend
+pip install -r requirements.txt
+```
+
+### 3. Iniciar o servidor
+
+```bash
+# A partir do diretório backend
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+O servidor estará disponível em: `http://localhost:8000`
+
+## 📚 Documentação da API
+
+Após iniciar o servidor, acesse:
+
+- **Swagger UI**: http://localhost:8000/docs
+- **ReDoc**: http://localhost:8000/redoc
+
+## 🗄️ Estrutura do Banco de Dados
+
+O sistema utiliza SQLite com as seguintes tabelas:
+
+### Tabela: `owners` (Responsáveis)
+
+| Campo | Tipo | Descrição |
+|-------|------|-----------|
+| id | VARCHAR(36) | UUID gerado automaticamente |
+| name | VARCHAR(140) | Nome completo (obrigatório) |
+| email | VARCHAR(140) | Email corporativo (obrigatório, único) |
+| phone | VARCHAR(20) | Telefone (obrigatório) |
+
+### Tabela: `assets` (Ativos)
+
+| Campo | Tipo | Descrição |
+|-------|------|-----------|
+| id | VARCHAR(36) | UUID gerado automaticamente |
+| name | VARCHAR(140) | Nome do ativo (obrigatório) |
+| category | VARCHAR(60) | Categoria do ativo (obrigatório) |
+| owner | VARCHAR(36) | FK para owners.id (CASCADE DELETE) |
+
+## 🛣️ Rotas da API
+
+### Owners (Responsáveis)
+
+#### POST /integrations/owner
+Cria um novo responsável.
+
+**Request Body:**
+```json
+{
+  "name": "João da Silva",
+  "email": "joao.silva@empresa.com",
+  "phone": "+55 11 98765-4321"
+}
+```
+
+**Response (201):**
+```json
+{
+  "id": "uuid-gerado-automaticamente",
+  "name": "João da Silva",
+  "email": "joao.silva@empresa.com",
+  "phone": "+55 11 98765-4321"
+}
+```
+
+#### GET /integrations/owner/{owner_id}
+Busca um responsável por ID.
+
+**Response (200):**
+```json
+{
+  "id": "uuid-do-owner",
+  "name": "João da Silva",
+  "email": "joao.silva@empresa.com",
+  "phone": "+55 11 98765-4321"
+}
+```
+
+#### GET /integrations/owners
+Lista todos os responsáveis (com paginação).
+
+**Query Parameters:**
+- `skip`: Número de registros a pular (padrão: 0)
+- `limit`: Número máximo de registros (padrão: 100)
+
+#### PUT /integrations/owner/{owner_id}
+Atualiza um responsável existente.
+
+**Request Body (campos opcionais):**
+```json
+{
+  "name": "João da Silva Jr.",
+  "phone": "+55 11 99999-9999"
+}
+```
+
+#### DELETE /integrations/owner/{owner_id}
+Deleta um responsável e todos os seus ativos (CASCADE DELETE).
+
+**Response:** 204 No Content
+
+⚠️ **ATENÇÃO**: Esta operação também deletará todos os ativos associados a este responsável.
+
+### Assets (Ativos)
+
+#### POST /integrations/asset
+Cria um novo ativo.
+
+**Request Body:**
+```json
+{
+  "name": "Aeronave Boeing 737",
+  "category": "Aeronave",
+  "owner": "uuid-do-owner"
+}
+```
+
+**Response (201):**
+```json
+{
+  "id": "uuid-gerado-automaticamente",
+  "name": "Aeronave Boeing 737",
+  "category": "Aeronave",
+  "owner": "uuid-do-owner"
+}
+```
+
+#### GET /integrations/asset/{asset_id}
+Busca um ativo por ID.
+
+#### GET /integrations/assets
+Lista todos os ativos (com paginação).
+
+**Query Parameters:**
+- `skip`: Número de registros a pular (padrão: 0)
+- `limit`: Número máximo de registros (padrão: 100)
+
+#### PUT /integrations/asset/{asset_id}
+Atualiza um ativo existente.
+
+**Request Body (campos opcionais):**
+```json
+{
+  "name": "Aeronave Boeing 777",
+  "category": "Aeronave Comercial"
+}
+```
+
+#### DELETE /integrations/asset/{asset_id}
+Deleta um ativo.
+
+**Response:** 204 No Content
+
+## ✅ Funcionalidades Implementadas
+
+### Nível 1 - Validação ✓
+- [x] Validação completa de dados com Pydantic
+- [x] Mensagens de erro claras e específicas
+- [x] Validação de tipos (UUID, strings com limites)
+- [x] Campos obrigatórios
+- [x] Validação de email
+
+### Nível 2 - Persistência ✓
+- [x] Integração com SQLAlchemy
+- [x] Banco de dados SQLite
+- [x] IDs gerados automaticamente (UUID)
+- [x] CRUD completo para Assets
+- [x] CRUD completo para Owners
+- [x] Relacionamento entre tabelas (Foreign Key)
+- [x] **CASCADE DELETE**: Deletar owner deleta automaticamente seus assets
+- [x] Validação de email único
+- [x] Paginação em listagens
+
+### Nível 3 - Testes ✓
+- [x] **75 testes unitários** com pytest
+- [x] **91% de cobertura** de código
+- [x] Testes para modelos (SQLAlchemy)
+- [x] Testes para schemas (Pydantic)
+- [x] Testes para serviços (lógica de negócio)
+- [x] Testes para rotas da API (integração)
+- [x] Fixtures compartilhadas (conftest.py)
+- [x] Banco de dados em memória para testes
+- [x] Relatório de cobertura HTML
+- [x] Isolamento entre testes
+
+## 🧪 Testes
+
+### Executar todos os testes
+
+```bash
+# No diretório backend
+pytest
+```
+
+### Executar testes com cobertura detalhada
+
+```bash
+pytest --cov=app --cov-report=html --cov-report=term-missing
+```
+
+Após executar, abra `htmlcov/index.html` no navegador para visualizar o relatório detalhado de cobertura.
+
+### Executar testes específicos
+
+```bash
+# Apenas testes de modelos
+pytest tests/test_models.py
+
+# Apenas testes de schemas
+pytest tests/test_schemas.py
+
+# Apenas testes de serviços
+pytest tests/test_services.py
+
+# Apenas testes de API
+pytest tests/test_api_owners.py tests/test_api_assets.py
+
+# Um teste específico
+pytest tests/test_models.py::TestOwnerModel::test_create_owner
+```
+
+### Estrutura dos Testes
+
+```
+tests/
+├── conftest.py              # Fixtures compartilhadas
+├── test_models.py           # Testes dos modelos SQLAlchemy (11 testes)
+├── test_schemas.py          # Testes dos schemas Pydantic (14 testes)
+├── test_services.py         # Testes da camada de serviço (19 testes)
+├── test_api_owners.py       # Testes das rotas de owners (15 testes)
+└── test_api_assets.py       # Testes das rotas de assets (16 testes)
+```
+
+### Cobertura de Testes
+
+**Total: 75 testes | 91% de cobertura**
+
+| Módulo | Cobertura | Detalhes |
+|--------|-----------|----------|
+| **Models** | 100% | Modelos SQLAlchemy (Owner, Asset) |
+| **Services** | 93-100% | Lógica de negócio (CRUD) |
+| **API Routes** | 96-97% | Endpoints REST |
+| **Schemas** | 82% | Validação Pydantic |
+| **Database** | 100% | Configuração e sessões |
+
+### O que é testado
+
+#### ✅ Modelos (test_models.py)
+- Criação de registros
+- Geração automática de UUIDs
+- Validação de campos obrigatórios
+- Constraint de email único
+- CASCADE DELETE (deletar owner deleta assets)
+- Foreign key constraints
+- Representação string (`__repr__`)
+
+#### ✅ Schemas (test_schemas.py)
+- Validação de dados de entrada
+- Validação de email
+- Limites de caracteres (name: 140, category: 60)
+- Campos obrigatórios
+- Atualização parcial (campos opcionais)
+- Schemas de resposta com ID
+
+#### ✅ Services (test_services.py)
+- CRUD completo (Create, Read, Update, Delete)
+- Paginação (skip/limit)
+- Email único para owners
+- Validação de owner existente ao criar asset
+- Retorno None para registros não encontrados
+
+#### ✅ API - Owners (test_api_owners.py)
+- `POST /integrations/owner` - Criar owner
+- `GET /integrations/owner/{id}` - Buscar owner
+- `GET /integrations/owners` - Listar owners com paginação
+- `PUT /integrations/owner/{id}` - Atualizar owner
+- `DELETE /integrations/owner/{id}` - Deletar owner (CASCADE)
+- Validações de email duplicado
+- Códigos HTTP corretos (201, 200, 204, 404, 400, 422)
+
+#### ✅ API - Assets (test_api_assets.py)
+- `POST /integrations/asset` - Criar asset
+- `GET /integrations/asset/{id}` - Buscar asset
+- `GET /integrations/assets` - Listar assets com paginação
+- `PUT /integrations/asset/{id}` - Atualizar asset
+- `DELETE /integrations/asset/{id}` - Deletar asset
+- Validação de owner existente
+- Validação de limites de caracteres
+- Relacionamento com owner
+
+### Fixtures Disponíveis
+
+```python
+# Sessão de banco de dados em memória (isolada para cada teste)
+def test_example(db_session):
+    ...
+
+# Cliente de teste da API
+def test_example(client):
+    response = client.get("/integrations/owners")
+    ...
+
+# Owner já criado no banco
+def test_example(created_owner):
+    owner_id = created_owner["id"]
+    ...
+
+# Asset já criado no banco (com owner)
+def test_example(created_asset):
+    asset_id = created_asset["id"]
+    ...
+```
+
+## 🚀 Quick Start
+
+### Rodar testes do Nível 1
+```bash
+python test_nivel1.py
+```
+
+### Rodar testes do Nível 2
+```bash
+python test_nivel2.py
+```
+
+### Rodar testes do Nível 3 (Testes Unitários)
+```bash
+pytest
+```
+
+## 🏗️ Estrutura do Projeto
+
+```
+backend/
+├── app/
+│   ├── __init__.py
+│   ├── main.py                 # Aplicação principal FastAPI
+│   ├── api/
+│   │   └── v1/
+│   │       ├── __init__.py
+│   │       ├── assets.py       # Rotas de assets
+│   │       └── owners.py       # Rotas de owners
+│   ├── db/
+│   │   ├── base.py            # Configuração do SQLAlchemy
+│   │   ├── sessions.py        # Dependency de sessão do DB
+│   │   └── models/
+│   │       ├── __init__.py
+│   │       ├── asset.py       # Modelo Asset
+│   │       ├── owner.py       # Modelo Owner
+│   │       └── user.py        # Modelo User (preparação Nível 5)
+│   ├── schemas/
+│   │   ├── __init__.py
+│   │   ├── asset.py          # Schemas Pydantic de Asset
+│   │   └── owner.py          # Schemas Pydantic de Owner
+│   └── services/
+│       ├── asset_service.py  # Lógica de negócio de Assets
+│       └── owner_service.py  # Lógica de negócio de Owners
+├── tests/
+│   ├── __init__.py
+│   ├── conftest.py           # Fixtures compartilhadas
+│   ├── test_models.py        # Testes dos modelos (11 testes)
+│   ├── test_schemas.py       # Testes dos schemas (14 testes)
+│   ├── test_services.py      # Testes dos serviços (19 testes)
+│   ├── test_api_owners.py    # Testes API owners (15 testes)
+│   └── test_api_assets.py    # Testes API assets (16 testes)
+├── pytest.ini                # Configuração do pytest
+├── requirements.txt
+├── test_nivel1.py           # Testes de validação (Nível 1)
+├── test_nivel2.py           # Testes de persistência (Nível 2)
+└── assets.db                # Banco de dados SQLite (gerado automaticamente)
+```
+
+## 🔍 Detalhes Técnicos
+
+### Cascade Delete
+O sistema implementa CASCADE DELETE através de:
+
+1. **Modelo Owner** (`app/db/models/owner.py`):
+```python
+assets = relationship(
+    "Asset",
+    back_populates="owner_rel",
+    cascade="all, delete-orphan",
+    passive_deletes=True
+)
+```
+
+2. **Modelo Asset** (`app/db/models/asset.py`):
+```python
+owner = Column(
+    String(36), 
+    ForeignKey("owners.id", ondelete="CASCADE"), 
+    nullable=False
+)
+```
+
+Isso garante que ao deletar um Owner, todos os seus Assets sejam automaticamente deletados.
+
+### Validações
+- Email único (constraint no banco + validação na camada de serviço)
+- Owner deve existir ao criar/atualizar Asset
+- Todos os campos obrigatórios validados
+- Limites de caracteres respeitados
+
+## 📝 Próximos Passos
+
+- [ ] Nível 4: Autenticação JWT
+- [ ] Nível 5: Usuários e login via banco
+- [ ] Nível 6: Docker e documentação completa
+
+---
+
+## 📊 Estatísticas do Projeto
+
+- **Linhas de código**: ~1.500
+- **Testes**: 75
+- **Cobertura**: 91%
+- **Endpoints**: 10 (5 owners + 5 assets)
+- **Modelos**: 3 (Owner, Asset, User)
+- **Tempo de execução dos testes**: ~1.6s
