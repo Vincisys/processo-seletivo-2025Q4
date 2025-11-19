@@ -6,7 +6,7 @@ from pathlib import Path
 from fastapi import FastAPI
 from app.api.v1 import api_router
 from app.db.base import engine, Base
-from app.db.models import Asset, Owner
+from app.db.models import Asset, Owner  # Importar modelos para criar tabelas
 
 # Adicionar o diretório backend ao path
 backend_dir = Path(__file__).parent.parent
