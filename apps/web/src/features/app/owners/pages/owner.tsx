@@ -1,4 +1,5 @@
 import { Card } from "@/components/ui/card";
+import { OwnerDataTable } from "../components/Table/data-table";
 
 export function OwnerPage() {
   return (
@@ -10,6 +11,7 @@ export function OwnerPage() {
             Gerencie os responsáveis do sistema
           </p>
         </div>
+        <OwnerDataTable owners={[]} isLoading={false} />
       </Card>
     </div>
   );

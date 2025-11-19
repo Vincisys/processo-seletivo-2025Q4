@@ -6,12 +6,9 @@ export function AssetsPage() {
       <Card className="w-full max-w-md p-6">
         <div className="mb-6 space-y-2 text-center">
           <h1 className="text-2xl font-bold">Ativos</h1>
-          <p className="text-muted-foreground">
-            Gerencie os ativos do sistema
-          </p>
+          <p className="text-muted-foreground">Gerencie os ativos do sistema</p>
         </div>
       </Card>
     </div>
   );
 }
-

@@ -4,9 +4,9 @@ import { AppLayout } from "./routes/app-layout";
 import { ProtectedRoute } from "./components/protected-route";
 import { PublicRoute } from "./components/public-route";
 import { LoginPage } from "./features/auth/pages/login";
-import { OwnerPage } from "./features/app/pages/owner";
-import { AssetsPage } from "./features/app/pages/assets";
 import { HomePage } from "./features/home/pages/home";
+import { AssetsPage } from "./features/app/assets/pages/assets";
+import { OwnerPage } from "./features/app/owners/pages/owner";
 
 export const router = createBrowserRouter([
   {

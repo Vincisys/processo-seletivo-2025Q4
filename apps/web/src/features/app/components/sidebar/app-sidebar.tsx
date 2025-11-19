@@ -79,7 +79,6 @@ export function EyesOnAssetSidebar() {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
-
       <SidebarFooter className="bg-[#333b42] px-2 py-2">
         <hr className="border-t border-gray-200 -mt-px" />
         <SidebarMenu>
