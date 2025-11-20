@@ -37,17 +37,17 @@ export function EyesOnAssetSidebar() {
   const { logout } = useAuth();
 
   return (
-    <Sidebar collapsible="icon">
-      <SidebarHeader className="bg-[#333b42]">
+    <Sidebar collapsible="icon" className="border-r bg-slate-50">
+      <SidebarHeader className="bg-slate-50">
         <EnterpriseSwitcher />
       </SidebarHeader>
 
-      <SidebarContent className="bg-[#333b42] py-2">
+      <SidebarContent className="bg-slate-50">
         <SidebarGroup className="space-y-6">
-          <SidebarGroupLabel className="text-md font-semibold text-white tracking-wider">
+          <SidebarGroupLabel className="text-xs font-semibold text-muted-foreground tracking-wider uppercase">
             Funcionalidades
           </SidebarGroupLabel>
-          <SidebarMenu className="space-y-2">
+          <SidebarMenu className="space-y-1">
             {items.map((item) => {
               const active = location.pathname.startsWith(item.url);
               return (
@@ -56,21 +56,19 @@ export function EyesOnAssetSidebar() {
                     asChild
                     isActive={active}
                     className={cn(
-                      "h-12 text-base rounded-lg",
-                      "hover:bg-[#52616f] transition-colors",
-                      "data-[active=true]:bg-[#52616f] data-[active=true]:text-white"
+                      "h-10 text-sm rounded-md transition-all duration-200",
+                      "hover:bg-orange-50 hover:text-orange-600",
+                      "data-[active=true]:bg-orange-100 data-[active=true]:text-orange-700 data-[active=true]:font-medium"
                     )}
                   >
                     <Link to={item.url}>
                       <item.icon
                         className={cn(
-                          "mr-3 size-6 transition-colors",
-                          active ? "text-white" : "text-white"
+                          "mr-2 size-4",
+                          active ? "text-orange-600" : "text-muted-foreground"
                         )}
                       />
-                      <span className="font-medium text-white">
-                        {item.title}
-                      </span>
+                      <span>{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -79,20 +77,20 @@ export function EyesOnAssetSidebar() {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="bg-[#333b42] px-2 py-2">
-        <hr className="border-t border-gray-200 -mt-px" />
+      <SidebarFooter className="bg-white px-2 py-2">
+        <hr className="border-t border-gray-100 -mt-px mb-2" />
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
               onClick={logout}
               className={cn(
-                "font-medium gap-3 h-12 rounded-lg px-4 py-2",
-                "text-white hover:bg-[#52616f] hover:text-white",
+                "h-10 text-sm rounded-md",
+                "text-muted-foreground hover:bg-red-50 hover:text-red-600",
                 "transition-colors cursor-pointer"
               )}
             >
-              <LogOut size={20} className="text-white" />
-              <span className="text-white text-base">Sair</span>
+              <LogOut size={16} />
+              <span>Sair</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
