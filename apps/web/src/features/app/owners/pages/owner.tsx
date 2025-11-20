@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { OwnerDataTable } from "../components/Table/data-table";
 import { useQuery } from "@tanstack/react-query";
 import { getAllOwners } from "../services/owner";
+import { EyesonTitle } from "@/components/EyesonAsset/eyeson-title";
 
 export function OwnerPage() {
   const { data: owners, isLoading } = useQuery({
@@ -11,12 +12,10 @@ export function OwnerPage() {
 
   return (
     <div className="flex flex-col gap-4 p-4">
-      <div className="mb-6 space-y-2">
-        <h1 className="text-2xl font-bold">Responsáveis</h1>
-        <p className="text-muted-foreground">
-          Gerencie os responsáveis do sistema
-        </p>
-      </div>
+      <EyesonTitle
+        title="Responsáveis"
+        subtitle="Gerencie os responsáveis do sistema"
+      />
       <Card>
         <CardContent className="flex flex-row">
           <img
@@ -36,7 +35,7 @@ export function OwnerPage() {
           </div>
         </CardContent>
       </Card>
-      <OwnerDataTable owners={owners || []} isLoading={isLoading || false} />
+      <OwnerDataTable owners={owners} isLoading={isLoading} />
     </div>
   );
 }

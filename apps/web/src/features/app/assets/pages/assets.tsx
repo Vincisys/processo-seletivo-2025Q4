@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { AssetDataTable } from "../components/Table/data-table";
 import { useQuery } from "@tanstack/react-query";
 import { getAllAssets } from "../services/asset";
+import { EyesonTitle } from "@/components/EyesonAsset/eyeson-title";
 
 export function AssetsPage() {
   const { data: assets, isLoading } = useQuery({
@@ -11,10 +12,7 @@ export function AssetsPage() {
 
   return (
     <div className="flex flex-col gap-4 p-4">
-      <div className="mb-6 space-y-2">
-        <h1 className="text-2xl font-bold">Ativos</h1>
-        <p className="text-muted-foreground">Gerencie os ativos do sistema</p>
-      </div>
+      <EyesonTitle title="Ativos" subtitle="Gerencie os ativos do sistema" />
       <Card>
         <CardContent className="flex flex-row">
           <img
