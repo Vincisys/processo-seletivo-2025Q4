@@ -23,9 +23,9 @@
 <h4 align="center">Testes de Owner</h4>
 <h5>POST</h5>
 
-* [ ] Criar teste de POST owner bem-sucedida
-* [ ] Criar teste de POST owner mal sucedida por falta de nome, email e telefone
-* [ ] Criar teste de POST owner mal sucedida por formato de email inválido
+* [X] ~~*Criar teste de POST owner bem-sucedida*~~ [2025-11-20]
+* [X] ~~*Criar teste de POST owner mal sucedida por falta de nome, email e telefone*~~ [2025-11-20]
+* [X] ~~*Criar teste de POST owner mal sucedida por formato de email inválido*~~ [2025-11-20]
 * [ ] Criar teste de POST owner mal sucedida por tamanho de nome, email e telefone
 
 <h5>PUT</h5>
@@ -37,21 +37,21 @@
 
 <h5>GET</h5>
 
-* [ ] Criar teste de GET owner bem-sucedida
+* [X] ~~*Criar teste de GET owner bem-sucedida*~~ [2025-11-20]
 * [ ] Criar teste de GET owner mal sucedida por ID com formato inválido
-* [ ] Criar teste de GET owner mal sucedida por ID inexistente
+* [X] ~~*Criar teste de GET owner mal sucedida por ID inexistente*~~ [2025-11-20]
 
 <h5>DELETE</h5>
 
-* [ ] Criar teste de DELETE owner bem-sucedida e verificar se o elemento sumiu
+* [X] ~~*Criar teste de DELETE owner bem-sucedida e verificar se o elemento sumiu*~~ [2025-11-20]
 * [ ] Criar teste de DELETE owner mal sucedida por ID com formato inválido
-* [ ] Criar teste de DELETE owner mal sucedida por ID inexistente
+* [X] ~~*Criar teste de DELETE owner mal sucedida por ID inexistente*~~ [2025-11-20]
 
 <h4 align="center">Testes de Asset</h4>
 
 <h5>POST</h5>
 
-* [ ] Criar teste de POST asset bem-sucedida
+* [X] ~~*Criar teste de POST asset bem-sucedida*~~ [2025-11-20]
 * [ ] Criar teste de POST asset mal sucedida por falta de owner_id
 * [ ] Criar teste de POST asset mal sucedida por falta de name
 * [ ] Criar teste de POST asset mal sucedida por falta de category
