@@ -1,7 +1,7 @@
 <h3 align="center">Backend</h3>
 
-* [X] ~~*Concluir o 1° nível do backend*~~ [2025-11-18]
-* [ ] Concluir o 2° nível do backend
+* [X] ~~*Concluir o 1° nível do backend*~~ [2025-11-20]
+* [X] ~~*Concluir o 2° nível do backend*~~ [2025-11-20]
 * [ ] Concluir o 3° nível do backend
 * [ ] Concluir o 4° nível do backend
 * [ ] Concluir o 5° nível do backend
