@@ -5,6 +5,8 @@ from fastapi.testclient import TestClient
 from app.infrastructure.database import Base, get_db
 from app.domain.owners.models import Owner
 from app.domain.assets.models import Asset
+from app.domain.users.models import User
+from app.infrastructure.seed import seed_initial_user
 
 
 @pytest.fixture(scope="function")
@@ -40,12 +42,21 @@ def client(test_db):
     # Importar modelos primeiro para garantir que estejam registrados
     from app.domain.owners.models import Owner
     from app.domain.assets.models import Asset
+    from app.domain.users.models import User
     
     # Importar o app (ele tentará criar no engine de produção, mas não importa)
     from app.main import app
     
     # Criar as tabelas no banco de teste DEPOIS de importar tudo
     Base.metadata.create_all(bind=test_db)
+    
+    # Criar usuário inicial para os testes
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=test_db)
+    session = SessionLocal()
+    try:
+        seed_initial_user(session)
+    finally:
+        session.close()
     
     def override_get_db():
         SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=test_db)
