@@ -16,3 +16,9 @@ export interface AssetUpdate {
   category?: string | null;
   owner_id?: string;
 }
+
+export type AssetField = {
+  label: string;
+  key: string;
+  width: string;
+};
