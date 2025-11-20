@@ -1,25 +1,4 @@
-import { api } from "@/lib/api";
-
-export interface LoginCredentials {
-  login: string;
-  password: string;
-}
-
-export interface LoginResponse {
-  access_token: string;
-  token_type: string;
-  expires_in?: number;
-}
-
-export const authService = {
-  async login(credentials: LoginCredentials): Promise<LoginResponse> {
-    const response = await api.post<LoginResponse>(
-      "/integrations/auth",
-      credentials
-    );
-    return response.data;
-  },
-
+export const authUtils = {
   logout(): void {
     localStorage.removeItem("token");
     localStorage.removeItem("tokenExpiration");
@@ -37,7 +16,7 @@ export const authService = {
     const now = Date.now();
 
     if (now >= expirationTime) {
-      this.logout();
+      authUtils.logout();
       return false;
     }
 

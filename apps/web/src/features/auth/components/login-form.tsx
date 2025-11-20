@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAuth } from "../hooks/useAuth";
+import { useLoginMutation } from "../hooks/use-login-mutation";
 import { useState } from "react";
 import { Loader2, Lock, User } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -10,13 +10,13 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
-  const { login, isLoading } = useAuth();
+  const { mutate: login, isPending } = useLoginMutation();
   const [loginValue, setLoginValue] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    await login({ login: loginValue, password });
+    login({ login: loginValue, password });
   };
 
   return (
@@ -42,7 +42,7 @@ export function LoginForm({
               value={loginValue}
               onChange={(e) => setLoginValue(e.target.value)}
               required
-              disabled={isLoading}
+              disabled={isPending}
               placeholder="ex: admin"
               className="pl-9"
             />
@@ -67,7 +67,7 @@ export function LoginForm({
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              disabled={isLoading}
+              disabled={isPending}
               placeholder="••••••••"
               className="pl-9"
             />
@@ -76,10 +76,10 @@ export function LoginForm({
         <Button
           type="submit"
           className="w-full bg-orange-500 text-white hover:bg-orange-600"
-          disabled={isLoading}
+          disabled={isPending}
         >
-          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {isLoading ? "Entrando..." : "Entrar"}
+          {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {isPending ? "Entrando..." : "Entrar"}
         </Button>
       </div>
     </form>
