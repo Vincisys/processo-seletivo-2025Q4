@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/table";
 import type { Asset } from "../../types/asset";
 import CreateAssetSheet from "../Sheets/create-asset-sheet";
+import EditAssetSheet from "../Sheets/edit-asset-sheet";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -193,11 +194,14 @@ export function AssetDataTable({
                   );
                 })}
                 <TableCell className="whitespace-nowrap text-base">
-                  <DeleteAssetDialog
-                    asset={asset}
-                    onDelete={(id) => deleteAssetMutation.mutate(id)}
-                    isPending={deleteAssetMutation.isPending}
-                  />
+                  <div className="flex items-center gap-2">
+                    <EditAssetSheet asset={asset} />
+                    <DeleteAssetDialog
+                      asset={asset}
+                      onDelete={(id) => deleteAssetMutation.mutate(id)}
+                      isPending={deleteAssetMutation.isPending}
+                    />
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
