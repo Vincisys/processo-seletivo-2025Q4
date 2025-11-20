@@ -1,5 +1,5 @@
 {
-  "name": "my-better-t-app",
+  "name": "eyesonasset-challenge",
   "private": true,
   "type": "module",
   "workspaces": [
@@ -8,11 +8,15 @@
   ],
   "scripts": {
     "dev": "pnpm -r dev",
-    "dev:fe": "docker compose up -d backend && pnpm --filter web dev",
+    "dev:fe": "docker compose up -d --build backend && pnpm --filter web dev",
     "build": "pnpm -r build",
     "check-types": "pnpm -r check-types",
     "dev:native": "pnpm --filter native dev",
-    "dev:web": "pnpm --filter web dev"
+    "dev:web": "pnpm --filter web dev",
+    "py:install": "pnpm --filter eyeson-back py:install",
+    "test": "pnpm --filter eyeson-back test",
+    "docker:build": "docker compose build",
+    "docker:up": "docker compose up -d"
   },
   "packageManager": "pnpm@10.22.0"
 }
