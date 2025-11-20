@@ -1,15 +1,27 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.infrastructure.database import engine, Base
+from app.infrastructure.database import engine, Base, SessionLocal
 from app.domain.owners.models import Owner
 from app.domain.assets.models import Asset
+from app.domain.users.models import User
 from app.domain.owners.owner_controller import router as owner_router
 from app.domain.assets.assets_controller import router as asset_router
 from app.domain.auth.auth_controller import router as auth_router
+from app.domain.users.user_controller import router as user_router
 
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Eyesonasset Backend API", version="1.0.0", redirect_slashes=False)
+
+
+@app.on_event("startup")
+def startup_event():
+    from app.infrastructure.seed import seed_initial_user
+    db = SessionLocal()
+    try:
+        seed_initial_user(db)
+    finally:
+        db.close()
 
 app.add_middleware(
     CORSMiddleware,
@@ -20,6 +32,7 @@ app.add_middleware(
 )
 
 app.include_router(auth_router)
+app.include_router(user_router)
 app.include_router(owner_router)
 app.include_router(asset_router)
 
