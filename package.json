@@ -1,0 +1,23 @@
+{
+  "name": "eyesonasset-challenge",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "pnpm -r dev",
+    "dev:fe": "docker compose up -d --build backend && pnpm --filter web dev",
+    "build": "pnpm -r build",
+    "build:project": "pnpm install && pnpm --filter eyeson-back py:install",
+    "dev:native": "pnpm --filter native dev",
+    "dev:web": "pnpm --filter web dev",
+    "py:install": "pnpm --filter eyeson-back py:install",
+    "test": "pnpm --filter eyeson-back test",
+    "docker:build": "docker compose build",
+    "docker:up": "docker compose up -d",
+    "docker:test": "cd apps/eyeson-back && docker compose run --rm test"
+  },
+  "packageManager": "pnpm@10.22.0"
+}
