@@ -16,6 +16,90 @@ import { deleteAsset } from "../../services/asset";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { getAllOwners } from "../../../owners/services/owner";
+import { useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Input } from "@/components/ui/input";
+
+const DeleteAssetDialog = ({
+  asset,
+  onDelete,
+  isPending,
+}: {
+  asset: Asset;
+  onDelete: (id: string) => void;
+  isPending: boolean;
+}) => {
+  const [open, setOpen] = useState(false);
+  const [input, setInput] = useState("");
+  const isMatch = input === asset.name;
+
+  return (
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialogTrigger asChild>
+        <Button
+          variant="ghost"
+          size="sm"
+          disabled={isPending}
+          className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>
+            Tem certeza que deseja excluir{" "}
+            <span className="font-bold uppercase text-blue-500 underline">
+              {asset.name}
+            </span>
+            ?
+          </AlertDialogTitle>
+          <AlertDialogDescription>
+            Essa ação não pode ser desfeita. Para confirmar, digite o nome do
+            ativo abaixo:
+          </AlertDialogDescription>
+          <div className="mt-2">
+            <Input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder={`Digite "${asset.name}"`}
+              className="w-full"
+            />
+          </div>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel onClick={() => setInput("")}>
+            Cancelar
+          </AlertDialogCancel>
+          <AlertDialogAction
+            disabled={!isMatch}
+            className={`bg-red-600 hover:bg-red-700 text-white hover:text-white ${
+              !isMatch ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            onClick={() => {
+              setOpen(false);
+              onDelete(asset.id);
+              setInput("");
+            }}
+          >
+            Confirmar exclusão
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+};
 
 export function AssetDataTable({
   assets,
@@ -43,14 +127,6 @@ export function AssetDataTable({
       toast.error(errorMessage);
     },
   });
-
-  const handleDelete = (asset: Asset) => {
-    if (
-      window.confirm(`Tem certeza que deseja deletar o ativo "${asset.name}"?`)
-    ) {
-      deleteAssetMutation.mutate(asset.id);
-    }
-  };
 
   const getOwnerName = (ownerId: string): string => {
     const owner = owners?.find(
@@ -117,15 +193,11 @@ export function AssetDataTable({
                   );
                 })}
                 <TableCell className="whitespace-nowrap text-base">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleDelete(asset)}
-                    disabled={deleteAssetMutation.isPending}
-                    className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  <DeleteAssetDialog
+                    asset={asset}
+                    onDelete={(id) => deleteAssetMutation.mutate(id)}
+                    isPending={deleteAssetMutation.isPending}
+                  />
                 </TableCell>
               </TableRow>
             ))}
