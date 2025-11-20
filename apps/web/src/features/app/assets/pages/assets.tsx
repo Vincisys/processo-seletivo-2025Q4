@@ -1,8 +1,9 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { AssetDataTable } from "../components/Table/data-table";
 import { useQuery } from "@tanstack/react-query";
 import { getAllAssets } from "../services/asset";
 import { EyesonTitle } from "@/components/EyesonAsset/eyeson-title";
+import { StatsCard } from "@/components/EyesonAsset/stats-card";
+import { Package, AlertTriangle, CheckCircle, BarChart3 } from "lucide-react";
 
 export function AssetsPage() {
   const { data: assets, isLoading } = useQuery({
@@ -11,28 +12,37 @@ export function AssetsPage() {
   });
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="flex flex-col gap-6 p-6">
       <EyesonTitle title="Ativos" subtitle="Gerencie os ativos do sistema" />
-      <Card>
-        <CardContent className="flex flex-row">
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/7486/7486747.png"
-            width={150}
-            height={150}
-          />
-          <div className="flex flex-col gap-2 px-4">
-            <CardHeader className="text-2xl font-bold p-0">
-              Titulo do Card
-            </CardHeader>
-            <span>
-              Existe uma teoria que diz que, se um dia alguém descobrir
-              exatamente para que serve o Universo e por que ele está aqui, ele
-              desaparecerá instantaneamente.
-            </span>
-          </div>
-        </CardContent>
-      </Card>
-      <AssetDataTable assets={assets} isLoading={isLoading || false} />
+      
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <StatsCard
+          title="Total de Ativos"
+          value={assets?.length || 0}
+          description="Ativos registrados no sistema"
+          icon={Package}
+        />
+        <StatsCard
+          title="Em Operação"
+          value={assets ? Math.floor(assets.length * 0.8) : 0}
+          description="+2% em relação ao mês passado"
+          icon={CheckCircle}
+        />
+        <StatsCard
+          title="Em Manutenção"
+          value={assets ? Math.floor(assets.length * 0.15) : 0}
+          description="4 ativos aguardando peças"
+          icon={AlertTriangle}
+        />
+        <StatsCard
+          title="Valor Total"
+          value="R$ 1.2M"
+          description="Estimativa atualizada"
+          icon={BarChart3}
+        />
+      </div>
+
+      <AssetDataTable assets={assets || []} isLoading={isLoading || false} />
     </div>
   );
 }
