@@ -8,7 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { Owner } from "../../types/owner";
-import CreateOwnerSheet from "../../components/Sheets/create-owner-sheet";
+import CreateOwnerSheet from "../Sheets/create-owner-sheet";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteOwner } from "../../services/owner";
 import { toast } from "sonner";
@@ -41,36 +41,6 @@ export function OwnerDataTable({
       <div className="bg-white border border-gray-200 rounded-xl p-6">
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        </div>
-      </div>
-    );
-  }
-
-  if (owners.length === 0) {
-    return (
-      <div className="bg-white border border-gray-200 rounded-xl p-6">
-        <div className="flex flex-col items-center justify-center h-64 text-center">
-          <div className="text-gray-400 mb-4">
-            <svg
-              className="w-16 h-16 mx-auto"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1}
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
-          </div>
-          <h3 className="text-lg font-semibold text-gray-700 mb-2">
-            Nenhum filtro selecionado
-          </h3>
-          <p className="text-gray-500">
-            Utilize os filtros acima para buscar os dados
-          </p>
         </div>
       </div>
     );

@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { EnterpriseSwitcher } from "./enterprise-switcher";
-import { useAuth } from "@/features/auth/hooks/useAuth";
+import { useLogout } from "@/features/auth/hooks/use-logout";
 
 const items = [
   // { title: "Painel", url: "/app/dashboard", icon: LayoutDashboard },
@@ -34,7 +34,7 @@ const items = [
 
 export function EyesOnAssetSidebar() {
   const location = useLocation();
-  const { logout } = useAuth();
+  const { logout } = useLogout();
 
   return (
     <Sidebar collapsible="icon" className="border-r bg-slate-50">
