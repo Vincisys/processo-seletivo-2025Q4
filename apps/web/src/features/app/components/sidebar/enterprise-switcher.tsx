@@ -14,7 +14,7 @@ export function EnterpriseSwitcher() {
     >
       {!isCollapsed && (
         <div className="flex flex-col space-y-4">
-          <img src="/public/images/eyesonasset-logo.png" alt="Eyeson Asset" />
+          <img src="/images/eyesonasset-logo.png" alt="Eyeson Asset" />
           <span className="block text-sm text-black font-semibold">
             Sistema de Gestão de Ativos
           </span>
