@@ -18,12 +18,10 @@ export function authMiddleware(context: { location: { pathname: string } }) {
   const isAuthenticated = authService.isAuthenticated();
 
   if (!isAuthenticated && isPublicRoute) {
-    console.log("not authenticated and public route");
     return;
   }
 
   if (!isAuthenticated && !isPublicRoute) {
-    console.log("redirecting to not authenticated route");
     throw redirect({
       to: REDIRECT_WHEN_NOT_AUTHENTICATED_ROUTE,
     });
@@ -34,7 +32,6 @@ export function authMiddleware(context: { location: { pathname: string } }) {
     publicRoute &&
     publicRoute.whenAuthenticated === "redirect"
   ) {
-    console.log("redirecting to authenticated route");
     throw redirect({
       to: REDIRECT_WHEN_AUTHENTICATED_ROUTE as any,
     });
