@@ -2,18 +2,21 @@
 
 API REST para gestão de ativos físicos e seus responsáveis, desenvolvida com FastAPI e SQLAlchemy.
 
-![Tests](https://img.shields.io/badge/tests-75%20passed-success)
-![Coverage](https://img.shields.io/badge/coverage-91%25-brightgreen)
+![Tests](https://img.shields.io/badge/tests-127%20passed-success)
+![Coverage](https://img.shields.io/badge/coverage-94%25-brightgreen)
 ![Python](https://img.shields.io/badge/python-3.10+-blue)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.109.0-009688)
 ![JWT](https://img.shields.io/badge/auth-JWT-orange)
+![Security](https://img.shields.io/badge/security-bcrypt-red)
 
 ## ✨ Features
 
 - ✅ **Validação com Pydantic**: Schemas robustos com validação automática
 - ✅ **Persistência com SQLAlchemy**: ORM moderno com suporte a CASCADE DELETE
-- ✅ **Testes Unitários**: 75 testes com 91% de cobertura
+- ✅ **Testes Unitários**: 127 testes com 94% de cobertura
 - ✅ **Autenticação JWT**: Proteção de rotas com tokens JWT (HS256)
+- ✅ **Usuários com bcrypt**: Hash seguro de senhas com bcrypt
+- ✅ **CRUD Completo**: Operações para owners, assets e users
 - 🔄 **Documentação automática**: Swagger UI e ReDoc
 - 🔄 **API RESTful**: Endpoints padronizados e intuitivos
 
@@ -41,7 +44,14 @@ cd backend
 pip install -r requirements.txt
 ```
 
-### 3. Iniciar o servidor
+### 3. Criar usuário padrão
+
+```bash
+# Cria o usuário padrão no banco de dados
+python create_default_user.py
+```
+
+### 4. Iniciar o servidor
 
 ```bash
 # A partir do diretório backend
@@ -60,6 +70,14 @@ Após iniciar o servidor, acesse:
 ## 🗄️ Estrutura do Banco de Dados
 
 O sistema utiliza SQLite com as seguintes tabelas:
+
+### Tabela: `users` (Usuários)
+
+| Campo | Tipo | Descrição |
+|-------|------|-----------|
+| id | VARCHAR(36) | UUID gerado automaticamente |
+| username | VARCHAR(140) | Nome de usuário (obrigatório, único) |
+| hashed_password | VARCHAR | Hash bcrypt da senha (obrigatório) |
 
 ### Tabela: `owners` (Responsáveis)
 
@@ -87,6 +105,10 @@ Todas as rotas da API (exceto a rota de autenticação) requerem um token JWT v�
 
 #### POST /integrations/auth
 Endpoint de autenticação que retorna um token JWT.
+
+**Credenciais padrão:**
+- Username: `eyesonasset`
+- Password: `eyesonasset`
 
 **Request Body (form-data):**
 ```
@@ -283,16 +305,38 @@ Deleta um ativo.
 - [x] Paginação em listagens
 
 ### Nível 3 - Testes ✓
-- [x] **75 testes unitários** com pytest
-- [x] **91% de cobertura** de código
+- [x] **127 testes unitários** com pytest
+- [x] **94% de cobertura** de código
 - [x] Testes para modelos (SQLAlchemy)
 - [x] Testes para schemas (Pydantic)
 - [x] Testes para serviços (lógica de negócio)
 - [x] Testes para rotas da API (integração)
+- [x] Testes de autenticação JWT
+- [x] Testes de usuários e bcrypt
 - [x] Fixtures compartilhadas (conftest.py)
 - [x] Banco de dados em memória para testes
 - [x] Relatório de cobertura HTML
 - [x] Isolamento entre testes
+
+### Nível 4 - Autenticação JWT ✓
+- [x] **Autenticação via token JWT** (HS256)
+- [x] **Proteção de todas as rotas** (exceto /auth)
+- [x] **Expiração de tokens** (1 minuto)
+- [x] **18 testes de autenticação**
+- [x] Validação de tokens inválidos/expirados
+- [x] Middleware de autenticação personalizado
+- [x] Headers Authorization com Bearer token
+- [x] Mensagens de erro adequadas (401/403)
+
+### Nível 5 - Usuários ✓
+- [x] **Entidade User** com hash bcrypt
+- [x] **Autenticação via banco de dados**
+- [x] **CRUD completo de usuários**
+- [x] **34 novos testes** (service + API)
+- [x] Hash seguro de senhas (bcrypt)
+- [x] Validação de username único
+- [x] Endpoint de gerenciamento de usuários
+- [x] Script de criação de usuário padrão
 
 ## 🧪 Testes
 
@@ -334,24 +378,28 @@ pytest tests/test_models.py::TestOwnerModel::test_create_owner
 
 ```
 tests/
-├── conftest.py              # Fixtures compartilhadas
+├── conftest.py              # Fixtures compartilhadas (cria user padrão)
 ├── test_models.py           # Testes dos modelos SQLAlchemy (11 testes)
 ├── test_schemas.py          # Testes dos schemas Pydantic (14 testes)
 ├── test_services.py         # Testes da camada de serviço (19 testes)
+├── test_user_service.py     # Testes do UserService (16 testes)
 ├── test_api_owners.py       # Testes das rotas de owners (15 testes)
-└── test_api_assets.py       # Testes das rotas de assets (16 testes)
+├── test_api_assets.py       # Testes das rotas de assets (16 testes)
+├── test_api_users.py        # Testes das rotas de users (18 testes)
+└── test_auth.py             # Testes de autenticação JWT (18 testes)
 ```
 
 ### Cobertura de Testes
 
-**Total: 75 testes | 91% de cobertura**
+**Total: 127 testes | 94% de cobertura**
 
 | Módulo | Cobertura | Detalhes |
 |--------|-----------|----------|
-| **Models** | 100% | Modelos SQLAlchemy (Owner, Asset) |
-| **Services** | 93-100% | Lógica de negócio (CRUD) |
-| **API Routes** | 96-97% | Endpoints REST |
-| **Schemas** | 82% | Validação Pydantic |
+| **Models** | 90-100% | Modelos SQLAlchemy (User, Owner, Asset) |
+| **Services** | 93-100% | Lógica de negócio (CRUD + Auth) |
+| **API Routes** | 96-100% | Endpoints REST |
+| **Security** | 94% | JWT + bcrypt |
+| **Schemas** | 82-100% | Validação Pydantic |
 | **Database** | 100% | Configuração e sessões |
 
 ### O que é testado
@@ -403,12 +451,18 @@ tests/
 
 ```python
 # Sessão de banco de dados em memória (isolada para cada teste)
+# Cria automaticamente o usuário padrão (eyesonasset/eyesonasset)
 def test_example(db_session):
     ...
 
 # Cliente de teste da API
 def test_example(client):
     response = client.get("/integrations/owners")
+    ...
+
+# Headers com token JWT válido
+def test_example(auth_headers):
+    response = client.post("/integrations/owner", json=data, headers=auth_headers)
     ...
 
 # Owner já criado no banco
@@ -449,35 +503,46 @@ backend/
 │   ├── api/
 │   │   └── v1/
 │   │       ├── __init__.py
+│   │       ├── auth.py         # Autenticação JWT
+│   │       ├── users.py        # Rotas de usuários (CRUD)
 │   │       ├── assets.py       # Rotas de assets
 │   │       └── owners.py       # Rotas de owners
+│   ├── core/
+│   │   ├── auth.py            # Middleware JWT
+│   │   ├── config.py          # Configurações da aplicação
+│   │   └── security.py        # JWT + bcrypt utilities
 │   ├── db/
 │   │   ├── base.py            # Configuração do SQLAlchemy
 │   │   ├── sessions.py        # Dependency de sessão do DB
 │   │   └── models/
 │   │       ├── __init__.py
+│   │       ├── user.py        # Modelo User
 │   │       ├── asset.py       # Modelo Asset
-│   │       ├── owner.py       # Modelo Owner
-│   │       └── user.py        # Modelo User (preparação Nível 5)
+│   │       └── owner.py       # Modelo Owner
 │   ├── schemas/
 │   │   ├── __init__.py
+│   │   ├── auth.py           # Schemas de autenticação
+│   │   ├── user.py           # Schemas Pydantic de User
 │   │   ├── asset.py          # Schemas Pydantic de Asset
 │   │   └── owner.py          # Schemas Pydantic de Owner
 │   └── services/
+│       ├── user_service.py   # Lógica de negócio de Users
 │       ├── asset_service.py  # Lógica de negócio de Assets
 │       └── owner_service.py  # Lógica de negócio de Owners
 ├── tests/
 │   ├── __init__.py
 │   ├── conftest.py           # Fixtures compartilhadas
+│   ├── test_auth.py          # Testes de autenticação (18 testes)
 │   ├── test_models.py        # Testes dos modelos (11 testes)
 │   ├── test_schemas.py       # Testes dos schemas (14 testes)
 │   ├── test_services.py      # Testes dos serviços (19 testes)
+│   ├── test_user_service.py  # Testes UserService (16 testes)
+│   ├── test_api_users.py     # Testes API users (18 testes)
 │   ├── test_api_owners.py    # Testes API owners (15 testes)
 │   └── test_api_assets.py    # Testes API assets (16 testes)
 ├── pytest.ini                # Configuração do pytest
-├── requirements.txt
-├── test_nivel1.py           # Testes de validação (Nível 1)
-├── test_nivel2.py           # Testes de persistência (Nível 2)
+├── requirements.txt          # Dependências Python
+├── create_default_user.py    # Script de criação do usuário padrão
 └── assets.db                # Banco de dados SQLite (gerado automaticamente)
 ```
 

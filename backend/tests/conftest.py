@@ -41,12 +41,23 @@ def db_session():
     """
     Cria uma nova sessão de banco de dados para cada teste.
     Garante que os testes são isolados.
+    Cria o usuário padrão automaticamente.
     """
     # Criar todas as tabelas
     Base.metadata.create_all(bind=engine)
     
     # Criar sessão
     db = TestingSessionLocal()
+    
+    # Criar usuário padrão para autenticação
+    from app.services.user_service import UserService
+    from app.schemas.user import UserCreate
+    
+    default_user = UserCreate(
+        username="eyesonasset",
+        password="eyesonasset"
+    )
+    UserService.create_user(db, default_user)
     
     try:
         yield db

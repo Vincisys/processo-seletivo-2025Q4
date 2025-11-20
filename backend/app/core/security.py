@@ -4,14 +4,45 @@ Utilitários de segurança e autenticação JWT
 from datetime import datetime, timedelta
 from typing import Optional
 from jose import JWTError, jwt
+from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from app.core.config import settings
 
 
+# Contexto para hash de senhas com bcrypt
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
 # Security scheme para Swagger
 security = HTTPBearer()
+
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """
+    Verifica se a senha em texto plano corresponde ao hash.
+    
+    Args:
+        plain_password: Senha em texto plano
+        hashed_password: Hash da senha armazenado no banco
+        
+    Returns:
+        True se a senha está correta, False caso contrário
+    """
+    return pwd_context.verify(plain_password, hashed_password)
+
+
+def get_password_hash(password: str) -> str:
+    """
+    Cria um hash bcrypt da senha.
+    
+    Args:
+        password: Senha em texto plano
+        
+    Returns:
+        Hash bcrypt da senha
+    """
+    return pwd_context.hash(password)
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:

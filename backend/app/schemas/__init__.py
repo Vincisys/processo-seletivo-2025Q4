@@ -3,6 +3,7 @@ Schemas package initialization
 """
 from .asset import AssetCreate, AssetUpdate, AssetResponse
 from .owner import OwnerCreate, OwnerUpdate, OwnerResponse
+from .user import UserCreate, UserUpdate, UserResponse, UserInDB
 
 __all__ = [
     "AssetCreate", 
@@ -10,6 +11,10 @@ __all__ = [
     "AssetResponse",
     "OwnerCreate",
     "OwnerUpdate",
-    "OwnerResponse"
+    "OwnerResponse",
+    "UserCreate",
+    "UserUpdate",
+    "UserResponse",
+    "UserInDB"
 ]
 
