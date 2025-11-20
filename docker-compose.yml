@@ -1,0 +1,35 @@
+services:
+  # Backend Service
+  backend:
+    build:
+      context: ./apps/eyeson-back
+      dockerfile: Dockerfile
+    container_name: eyeson-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./apps/eyeson-back/data:/app/data
+    environment:
+      - DATABASE_URL=sqlite:////app/data/app.db
+    networks:
+      - eyeson-network
+
+  # Frontend Service (Production Build)
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      target: runner # Agora usamos o stage final com Nginx
+    container_name: eyeson-frontend
+    ports:
+      - "3001:80" # Mapeia a porta 80 do Nginx para 3001 do host
+    environment:
+      - VITE_API_URL=http://backend:8000
+    depends_on:
+      - backend
+    networks:
+      - eyeson-network
+
+networks:
+  eyeson-network:
+    driver: bridge
