@@ -74,7 +74,7 @@ def create_asset(asset: schemas.AssetCreate, db: Session = Depends(database.get_
     return db_asset
 
 @app.get("/integrations/asset/{asset_id}", response_model=schemas.AssetSchema)
-def read_asset_route(
+def read_asset(
     asset_id: uuid.UUID, 
     db: Session = Depends(database.get_db),
 ):
@@ -86,7 +86,7 @@ def read_asset_route(
     return asset
 
 @app.put("/integrations/asset/{asset_id}", response_model=schemas.AssetSchema) 
-def update_asset_route(
+def update_asset(
     asset_id: uuid.UUID,
     asset_update: schemas.AssetUpdate,
     db: Session = Depends(database.get_db),
@@ -102,7 +102,7 @@ def update_asset_route(
     return db_asset
 
 @app.delete("/integrations/asset/{asset_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_asset_route(
+def delete_asset(
     asset_id: uuid.UUID, 
     db: Session = Depends(database.get_db),
 ):
