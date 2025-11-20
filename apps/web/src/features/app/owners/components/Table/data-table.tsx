@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/table";
 import type { Owner } from "../../types/owner";
 import CreateOwnerSheet from "../Sheets/create-owner-sheet";
+import EditOwnerSheet from "../Sheets/edit-owner-sheet";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteOwner } from "../../services/owner";
 import { toast } from "sonner";
@@ -89,11 +90,14 @@ export function OwnerDataTable({
                   );
                 })}
                 <TableCell className="whitespace-nowrap text-base">
-                  <DeleteOwnerDialog
-                    owner={owner}
-                    onDelete={(id: string) => deleteOwnerMutation.mutate(id)}
-                    isPending={deleteOwnerMutation.isPending}
-                  />
+                  <div className="flex items-center gap-2">
+                    <EditOwnerSheet owner={owner} />
+                    <DeleteOwnerDialog
+                      owner={owner}
+                      onDelete={(id: string) => deleteOwnerMutation.mutate(id)}
+                      isPending={deleteOwnerMutation.isPending}
+                    />
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
