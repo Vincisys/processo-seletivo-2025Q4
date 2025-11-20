@@ -9,78 +9,16 @@ import {
 } from "@/components/ui/table";
 import type { Owner } from "../../types/owner";
 import CreateOwnerSheet from "../../components/Sheets/create-owner-sheet";
-import { Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteOwner } from "../../services/owner";
 import { toast } from "sonner";
-import { useState } from "react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-
-const DeleteOwnerDialog = ({
-  owner,
-  onDelete,
-  isPending,
-}: {
-  owner: Owner;
-  onDelete: (id: string) => void;
-  isPending: boolean;
-}) => {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogTrigger asChild>
-        <Button
-          variant="ghost"
-          size="sm"
-          disabled={isPending}
-          className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>
-            Tem certeza que deseja excluir o responsável "{owner.name}"?
-          </AlertDialogTitle>
-          <AlertDialogDescription>
-            Essa ação não pode ser desfeita.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <AlertDialogAction
-            className="bg-red-600 hover:bg-red-700 text-white hover:text-white"
-            onClick={() => {
-              setOpen(false);
-              onDelete(owner.id);
-            }}
-          >
-            Confirmar exclusão
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  );
-};
+import DeleteOwnerDialog from "./delete-owner-dialog";
 
 export function OwnerDataTable({
   owners,
   isLoading,
 }: {
-  owners: Array<Owner>;
+  owners: Owner[];
   isLoading: boolean;
 }) {
   const queryClient = useQueryClient();
@@ -183,7 +121,7 @@ export function OwnerDataTable({
                 <TableCell className="whitespace-nowrap text-base">
                   <DeleteOwnerDialog
                     owner={owner}
-                    onDelete={(id) => deleteOwnerMutation.mutate(id)}
+                    onDelete={(id: string) => deleteOwnerMutation.mutate(id)}
                     isPending={deleteOwnerMutation.isPending}
                   />
                 </TableCell>
