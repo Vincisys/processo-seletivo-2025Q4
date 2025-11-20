@@ -1,7 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
-import { login, authUtils } from "../services/auth.service";
+import { login } from "../services/auth-service";
+import { authUtils } from "../utils/auth-utils";
 import { toast } from "sonner";
-import type { LoginCredentials } from "../services/auth.service";
+import type { LoginCredentials } from "../types/auth-types";
 import { useNavigate } from "react-router-dom";
 
 export function useLoginMutation() {

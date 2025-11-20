@@ -1,5 +1,5 @@
 import { redirect } from "react-router-dom";
-import { authUtils } from "../features/auth/services/auth.service";
+import { authUtils } from "../features/auth/utils/auth-utils";
 
 const PUBLIC_ROUTES = ["/auth/login", "/"] as const;
 

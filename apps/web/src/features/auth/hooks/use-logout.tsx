@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { authUtils } from "../services/auth.service";
+import { authUtils } from "../utils/auth-utils";
 import { toast } from "sonner";
 
 export function useLogout() {
