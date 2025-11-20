@@ -9,7 +9,7 @@ from . import database
 
 SECRET_KEY = "chave_secreta"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 1
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/integrations/auth")
 pwd_context = CryptContext(schemes=['pbkdf2_sha256'])
