@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom";
 import { ModeToggle } from "./mode-toggle";
 import { Button } from "./ui/button";
-import { useAuth } from "@/features/auth/hooks/useAuth";
-import { authService } from "@/features/auth/services/auth.service";
+import { useLogout } from "@/features/auth/hooks/use-logout";
+import { authUtils } from "@/features/auth/services/auth.service";
 
 export default function Header() {
-  const { logout } = useAuth();
-  const isAuthenticated = authService.isAuthenticated();
+  const { logout } = useLogout();
+  const isAuthenticated = authUtils.isAuthenticated();
   const links = [{ to: "/", label: "Home" }] as const;
 
   return (

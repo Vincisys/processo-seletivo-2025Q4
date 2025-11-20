@@ -1,12 +1,12 @@
 import { Navigate } from "react-router-dom";
-import { authService } from "@/features/auth/services/auth.service";
+import { authUtils } from "@/features/auth/services/auth.service";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const isAuthenticated = authService.isAuthenticated();
+  const isAuthenticated = authUtils.isAuthenticated();
 
   if (!isAuthenticated) {
     return <Navigate to="/auth/login" replace />;
