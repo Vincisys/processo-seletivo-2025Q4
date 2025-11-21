@@ -1,9 +1,30 @@
+/**
+ * Componente de formulário para criação e edição de ativos.
+ * 
+ * Permite criar novos ativos ou editar ativos existentes.
+ * Carrega lista de responsáveis para seleção e valida dados antes de enviar.
+ */
+
 'use client';
 import React, { useState, useEffect } from 'react';
 import api from '@/api/axios';
 import { AxiosError } from 'axios';
 import { AssetCreateData, AssetFormProps, Owner, FastAPIError } from '@/app/types/data';
 
+/**
+ * Componente de formulário para ativos.
+ * 
+ * Funcionalidades:
+ * - Criação de novos ativos (quando initialData é null)
+ * - Edição de ativos existentes (quando initialData é fornecido)
+ * - Carregamento dinâmico da lista de responsáveis
+ * - Validação de campos obrigatórios (incluindo responsável)
+ * - Tratamento de erros da API
+ * - Callback para atualizar lista após operações
+ * 
+ * @param props - Props do componente AssetFormProps
+ * @returns Formulário de ativo com campos nome, categoria e seleção de responsável
+ */
 const AssetForm: React.FC<AssetFormProps> = ({ onAssetUpdated, initialData, onCancelEdit }) => {
   const [formData, setFormData] = useState<AssetCreateData>({
     name: '',

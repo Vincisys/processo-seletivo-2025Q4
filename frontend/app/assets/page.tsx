@@ -1,3 +1,14 @@
+/**
+ * Página de gestão de ativos (Assets).
+ * 
+ * Página principal para gerenciar ativos, incluindo:
+ * - Criação de novos ativos
+ * - Edição de ativos existentes
+ * - Listagem de todos os ativos
+ * 
+ * Protegida por autenticação via useAuthRedirect.
+ */
+
 'use client';
 import React, { useState } from 'react';
 import AssetForm from '@/app/components/AssetForm';
@@ -5,6 +16,14 @@ import AssetList from '@/app/components/AssetList';
 import { Asset } from '@/app/types/data'; 
 import { useAuthRedirect } from '@/hooks/useAuthRedirect';
 
+/**
+ * Componente da página de gestão de ativos.
+ * 
+ * Gerencia o estado de edição e coordena a comunicação entre
+ * AssetForm e AssetList através de callbacks.
+ * 
+ * @returns Página com formulário e lista de ativos
+ */
 const AssetsPage = () => {
     useAuthRedirect()
 

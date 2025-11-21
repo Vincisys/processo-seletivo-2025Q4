@@ -1,11 +1,27 @@
+/**
+ * Layout raiz da aplicação Next.js.
+ * 
+ * Define a estrutura HTML base e inclui o componente Navbar
+ * em todas as páginas. Configura metadados da aplicação.
+ */
+
 import type { Metadata } from 'next'
 import Navbar from '@/app/components/Navbar' 
 
+/**
+ * Metadados da aplicação para SEO e compartilhamento.
+ */
 export const metadata: Metadata = {
   title: 'EyesOnAsset CMMS',
   description: 'Gestão de Ativos e Responsáveis',
 }
 
+/**
+ * Componente de layout raiz que envolve todas as páginas.
+ * 
+ * @param children - Conteúdo das páginas filhas
+ * @returns Estrutura HTML com Navbar e container principal
+ */
 export default function RootLayout({
   children,
 }: {

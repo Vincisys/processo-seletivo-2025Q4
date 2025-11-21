@@ -1,3 +1,14 @@
+/**
+ * Página de detalhes de um ativo específico.
+ * 
+ * Exibe informações detalhadas de um ativo, incluindo:
+ * - Nome e categoria do ativo
+ * - Informações do responsável associado
+ * - ID do sistema
+ * 
+ * Acessível através da rota dinâmica /assets/[id].
+ */
+
 'use client';
 import React, { useState, useEffect } from 'react';
 import api from '@/api/axios'; 
@@ -6,6 +17,14 @@ import { useRouter } from 'next/navigation';
 
 import { useParams } from 'next/navigation';
 
+/**
+ * Componente da página de detalhes do ativo.
+ * 
+ * Busca os dados do ativo pela API usando o ID da URL
+ * e exibe todas as informações, incluindo o responsável associado.
+ * 
+ * @returns Página com detalhes completos do ativo ou estados de loading/erro
+ */
 const AssetDetailsPage = () => {
     const { id } = useParams();
     const router = useRouter();

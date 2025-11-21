@@ -1,8 +1,28 @@
+/**
+ * Componente de listagem de responsáveis.
+ * 
+ * Exibe uma tabela com todos os responsáveis cadastrados,
+ * permitindo editar e excluir responsáveis.
+ */
+
 'use client'
 import React, { useState, useEffect } from 'react';
 import api from '@/api/axios';
 import { Owner, OwnerListProps } from '@/app/types/data';
 
+/**
+ * Componente de lista de responsáveis.
+ * 
+ * Funcionalidades:
+ * - Busca e exibe todos os responsáveis da API
+ * - Permite editar responsáveis (chama callback onEdit)
+ * - Permite excluir responsáveis com confirmação
+ * - Atualiza automaticamente quando fetchTrigger muda
+ * - Exibe estados de loading e erro
+ * 
+ * @param props - Props do componente OwnerListProps
+ * @returns Tabela com lista de responsáveis e ações
+ */
 const OwnerList: React.FC<OwnerListProps> = ({ fetchTrigger, onEdit }) => {
   const [owners, setOwners] = useState<Owner[]>([]);
   const [loading, setLoading] = useState(true);

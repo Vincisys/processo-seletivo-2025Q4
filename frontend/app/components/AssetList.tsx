@@ -1,9 +1,30 @@
+/**
+ * Componente de listagem de ativos.
+ * 
+ * Exibe uma tabela com todos os ativos cadastrados,
+ * permitindo visualizar detalhes, editar e excluir ativos.
+ */
+
 'use client';
 import React, { useState, useEffect } from 'react';
 import api from '@/api/axios';
 import { Asset, AssetListProps } from '@/app/types/data';
 import { useRouter } from 'next/navigation'
 
+/**
+ * Componente de lista de ativos.
+ * 
+ * Funcionalidades:
+ * - Busca e exibe todos os ativos da API
+ * - Permite visualizar detalhes do ativo (navega para /assets/[id])
+ * - Permite editar ativos (chama callback onEdit)
+ * - Permite excluir ativos com confirmação
+ * - Atualiza automaticamente quando fetchTrigger muda
+ * - Exibe estado de loading
+ * 
+ * @param props - Props do componente AssetListProps
+ * @returns Tabela com lista de ativos e ações (Ver, Editar, Excluir)
+ */
 const AssetList: React.FC<AssetListProps> = ({ fetchTrigger, onEdit }) => {
   const router = useRouter();
   const [assets, setAssets] = useState<Asset[]>([]);

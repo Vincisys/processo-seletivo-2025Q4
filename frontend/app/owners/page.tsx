@@ -1,3 +1,14 @@
+/**
+ * Página de gestão de responsáveis (Owners).
+ * 
+ * Página principal para gerenciar responsáveis, incluindo:
+ * - Criação de novos responsáveis
+ * - Edição de responsáveis existentes
+ * - Listagem de todos os responsáveis
+ * 
+ * Protegida por autenticação via useAuthRedirect.
+ */
+
 'use client'; 
 import React, { useState } from 'react';
 import OwnerForm from '@/app/components/OwnerForm';
@@ -5,6 +16,14 @@ import OwnerList from '@/app/components/OwnerList';
 import { useAuthRedirect } from "@/hooks/useAuthRedirect"
 import { Owner } from "@/app/types/data"
 
+/**
+ * Componente da página de gestão de responsáveis.
+ * 
+ * Gerencia o estado de edição e coordena a comunicação entre
+ * OwnerForm e OwnerList através de callbacks.
+ * 
+ * @returns Página com formulário e lista de responsáveis
+ */
 const OwnersPage = () => {
     useAuthRedirect()
     

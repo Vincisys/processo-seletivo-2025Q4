@@ -1,9 +1,24 @@
+/**
+ * Página de registro de novos usuários.
+ * 
+ * Permite que novos usuários criem uma conta no sistema.
+ * Após registro bem-sucedido, redireciona para a página de login.
+ */
+
 'use client';
 import React, { useState } from 'react';
 import api from '../../api/axios';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
+/**
+ * Componente da página de registro.
+ * 
+ * Gerencia o estado do formulário e cria novos usuários na API.
+ * Exibe mensagens de sucesso/erro e redireciona após registro.
+ * 
+ * @returns Formulário de registro com campos de login e senha
+ */
 const RegisterPage = () => {
     const router = useRouter();
     const [formData, setFormData] = useState({ login: '', password: '' });

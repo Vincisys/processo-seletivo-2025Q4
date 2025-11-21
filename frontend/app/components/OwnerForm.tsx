@@ -1,9 +1,29 @@
+/**
+ * Componente de formulário para criação e edição de responsáveis.
+ * 
+ * Permite criar novos responsáveis ou editar responsáveis existentes.
+ * Valida dados, exibe mensagens de erro/sucesso e atualiza a lista após operações.
+ */
+
 'use client'
 import React, { useState, useEffect } from 'react';
 import api from '@/api/axios'
 import { AxiosError } from 'axios';
 import { OwnerCreateData, OwnerFormProps, FastAPIError } from '@/app/types/data';
 
+/**
+ * Componente de formulário para responsáveis.
+ * 
+ * Funcionalidades:
+ * - Criação de novos responsáveis (quando initialData é null)
+ * - Edição de responsáveis existentes (quando initialData é fornecido)
+ * - Validação de campos obrigatórios
+ * - Tratamento de erros da API
+ * - Callback para atualizar lista após operações
+ * 
+ * @param props - Props do componente OwnerFormProps
+ * @returns Formulário de responsável com campos nome, email e telefone
+ */
 const OwnerForm: React.FC<OwnerFormProps> = ({ onOwnerUpdated, initialData, onCancelEdit }) => {
   const [formData, setFormData] = useState<OwnerCreateData>({
     name: '',

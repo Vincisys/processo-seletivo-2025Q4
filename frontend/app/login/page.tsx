@@ -1,9 +1,24 @@
+/**
+ * Página de login da aplicação.
+ * 
+ * Permite que usuários autentiquem-se no sistema usando login e senha.
+ * Após autenticação bem-sucedida, armazena o token JWT e redireciona para /assets.
+ */
+
 'use client';
 import React, { useState } from 'react';
 import api from '@/api/axios';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link'; 
 
+/**
+ * Componente da página de login.
+ * 
+ * Gerencia o estado do formulário, valida credenciais e redireciona
+ * após autenticação bem-sucedida.
+ * 
+ * @returns Formulário de login com campos de login e senha
+ */
 const LoginPage = () => {
     const router = useRouter();
     const [formData, setFormData] = useState({ login: '', password: '' });

@@ -1,8 +1,27 @@
+/**
+ * Componente de barra de navegação da aplicação.
+ * 
+ * Exibe links de navegação principais e botão de logout.
+ * Oculto nas páginas de login e registro.
+ */
+
 'use client';
 import React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
+/**
+ * Componente de navegação principal.
+ * 
+ * Renderiza:
+ * - Logo da aplicação
+ * - Links para páginas principais (Ativos, Responsáveis)
+ * - Botão de logout
+ * 
+ * Oculto automaticamente nas rotas /login e /register.
+ * 
+ * @returns Barra de navegação ou null se estiver em rota oculta
+ */
 const Navbar = () => {
     const pathname = usePathname();
     const router = useRouter();
