@@ -11,9 +11,9 @@ from app.core.config import settings
 def test_login_success(client):
     """Testa login com credenciais corretas"""
     response = client.post(
-        "/integrations/auth",
+        "/integrations/login",
         data={
-            "login": "eyesonasset",
+            "username": "eyesonasset",
             "password": "eyesonasset"
         }
     )
@@ -28,7 +28,7 @@ def test_login_success(client):
     
     # Verificar valores
     assert data["token_type"] == "bearer"
-    assert data["expires_in"] == 60
+    assert data["expires_in"] == 3600  # 60 minutos em segundos
     assert isinstance(data["access_token"], str)
     assert len(data["access_token"]) > 0
 
@@ -36,9 +36,9 @@ def test_login_success(client):
 def test_login_invalid_credentials(client):
     """Testa login com credenciais inválidas"""
     response = client.post(
-        "/integrations/auth",
+        "/integrations/login",
         data={
-            "login": "wrong",
+            "username": "wrong",
             "password": "wrong"
         }
     )
@@ -50,7 +50,7 @@ def test_login_invalid_credentials(client):
 def test_login_missing_login(client):
     """Testa login sem o campo login"""
     response = client.post(
-        "/integrations/auth",
+        "/integrations/login",
         data={
             "password": "eyesonasset"
         }
@@ -62,9 +62,9 @@ def test_login_missing_login(client):
 def test_login_missing_password(client):
     """Testa login sem o campo password"""
     response = client.post(
-        "/integrations/auth",
+        "/integrations/login",
         data={
-            "login": "eyesonasset"
+            "username": "eyesonasset"
         }
     )
     
@@ -74,9 +74,9 @@ def test_login_missing_password(client):
 def test_token_structure(client):
     """Verifica a estrutura do token JWT gerado"""
     response = client.post(
-        "/integrations/auth",
+        "/integrations/login",
         data={
-            "login": "eyesonasset",
+            "username": "eyesonasset",
             "password": "eyesonasset"
         }
     )
@@ -119,9 +119,9 @@ def test_protected_route_with_valid_token(client, created_owner):
     """Testa acesso a rota protegida com token válido"""
     # Obter token
     auth_response = client.post(
-        "/integrations/auth",
+        "/integrations/login",
         data={
-            "login": "eyesonasset",
+            "username": "eyesonasset",
             "password": "eyesonasset"
         }
     )
@@ -141,9 +141,9 @@ def test_protected_route_missing_bearer_prefix(client):
     """Testa token sem o prefixo 'Bearer'"""
     # Obter token
     auth_response = client.post(
-        "/integrations/auth",
+        "/integrations/login",
         data={
-            "login": "eyesonasset",
+            "username": "eyesonasset",
             "password": "eyesonasset"
         }
     )
@@ -187,9 +187,9 @@ def test_create_owner_with_auth(client):
     """Testa criação de owner com autenticação"""
     # Obter token
     auth_response = client.post(
-        "/integrations/auth",
+        "/integrations/login",
         data={
-            "login": "eyesonasset",
+            "username": "eyesonasset",
             "password": "eyesonasset"
         }
     )
@@ -232,9 +232,9 @@ def test_get_owner_with_auth(client, created_owner):
     """Testa busca de owner com autenticação"""
     # Obter token
     auth_response = client.post(
-        "/integrations/auth",
+        "/integrations/login",
         data={
-            "login": "eyesonasset",
+            "username": "eyesonasset",
             "password": "eyesonasset"
         }
     )
@@ -254,9 +254,9 @@ def test_update_owner_with_auth(client, created_owner):
     """Testa atualização de owner com autenticação"""
     # Obter token
     auth_response = client.post(
-        "/integrations/auth",
+        "/integrations/login",
         data={
-            "login": "eyesonasset",
+            "username": "eyesonasset",
             "password": "eyesonasset"
         }
     )
@@ -277,9 +277,9 @@ def test_delete_owner_with_auth(client, created_owner):
     """Testa deleção de owner com autenticação"""
     # Obter token
     auth_response = client.post(
-        "/integrations/auth",
+        "/integrations/login",
         data={
-            "login": "eyesonasset",
+            "username": "eyesonasset",
             "password": "eyesonasset"
         }
     )
@@ -298,9 +298,9 @@ def test_create_asset_with_auth(client, created_owner):
     """Testa criação de asset com autenticação"""
     # Obter token
     auth_response = client.post(
-        "/integrations/auth",
+        "/integrations/login",
         data={
-            "login": "eyesonasset",
+            "username": "eyesonasset",
             "password": "eyesonasset"
         }
     )
@@ -327,9 +327,9 @@ def test_token_reuse(client):
     """Testa reutilização do mesmo token em múltiplas requisições"""
     # Obter token
     auth_response = client.post(
-        "/integrations/auth",
+        "/integrations/login",
         data={
-            "login": "eyesonasset",
+            "username": "eyesonasset",
             "password": "eyesonasset"
         }
     )

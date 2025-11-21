@@ -866,4 +866,4 @@ docker logs eyesonasset-backend -f 2>&1 | grep -i error
 
 ---
 
-**Desenvolvido com ❤️ usando FastAPI, SQLAlchemy e Docker**
+**Desenvolvido usando FastAPI, SQLAlchemy e Docker**

@@ -109,9 +109,9 @@ def sample_asset_data():
 def auth_headers(client):
     """Retorna headers com token JWT válido"""
     response = client.post(
-        "/integrations/auth",
+        "/integrations/login",
         data={
-            "login": "eyesonasset",
+            "username": "eyesonasset",
             "password": "eyesonasset"
         }
     )
