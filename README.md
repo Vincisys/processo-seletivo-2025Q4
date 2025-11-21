@@ -115,7 +115,7 @@ npm run dev
 ### 💾 Back-end (Pytest)
 
 ```bash
-pytest --cov-report=term-missing --cov=backend
+pytest --cov-report=term-missing
 ```
 
 ## ⚙️ Endpoints da API (FastAPI)
