@@ -1,0 +1,782 @@
+# EyesOnAsset API - Backend
+
+API REST para gestão de ativos físicos e seus responsáveis, desenvolvida com FastAPI e SQLAlchemy.
+
+![Tests](https://img.shields.io/badge/tests-111%20passed-success)
+![Python](https://img.shields.io/badge/python-3.10+-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.109.0-009688)
+![JWT](https://img.shields.io/badge/auth-JWT-orange)
+![Security](https://img.shields.io/badge/security-bcrypt-red)
+
+## ✨ Features
+
+- ✅ **Validação com Pydantic**: Schemas robustos com validação automática
+- ✅ **Persistência com SQLAlchemy**: ORM moderno com suporte a CASCADE DELETE
+- ✅ **Autenticação JWT**: Tokens JWT (HS256) com 60 minutos de expiração
+- ✅ **Segurança**: Hash bcrypt para senhas
+- ✅ **CRUD Completo**: Owners, Assets e Users
+- ✅ **Docker Ready**: Containerização completa
+- ✅ **Documentação automática**: Swagger UI e ReDoc
+
+## 📋 Requisitos
+
+### Opção 1: Docker (Recomendado)
+- Docker 20.10+
+- Docker Compose 1.29+
+
+### Opção 2: Python Local
+- Python 3.10+
+- SQLite (incluído no Python)
+
+## 🚀 Quick Start
+
+### Com Docker (Recomendado)
+
+```bash
+# 1. Iniciar servidor
+cd backend
+docker compose up -d --build
+
+# 2. Acessar documentação
+# http://localhost:8000/docs
+
+# 3. Criar primeiro usuário pelo endpoint /integrations/cadastro
+```
+
+### Sem Docker
+
+```bash
+# 1. Criar ambiente virtual
+cd backend
+python3 -m venv venv
+source venv/bin/activate  # Linux/Mac
+
+# 2. Instalar dependências
+pip install -r requirements.txt
+
+# 3. Iniciar servidor
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+## 📝 Comandos Essenciais
+
+### Gerenciamento do Container
+
+```bash
+# Iniciar o backend
+docker-compose up -d
+
+# Parar o backend
+docker-compose down
+
+# Reiniciar o backend
+docker-compose restart
+
+# Ver status dos containers
+docker ps
+
+# Rebuild após mudanças
+docker-compose up -d --build
+```
+
+### Logs e Debugging
+
+```bash
+# Ver logs em tempo real
+docker logs eyesonasset-backend -f
+
+# Ver últimas 50 linhas dos logs
+docker logs eyesonasset-backend --tail 50
+
+# Ver logs com timestamp
+docker logs eyesonasset-backend -f --timestamps
+
+# Ver apenas erros nos logs (HTTP 4xx/5xx)
+docker logs eyesonasset-backend --tail 100 2>&1 | grep -E "(ERROR|404|500|400)"
+
+# Ver requisições específicas (GET, POST, PUT, DELETE)
+docker logs eyesonasset-backend --tail 100 2>&1 | grep -E "(GET|POST|PUT|DELETE)"
+```
+
+### Execução de Comandos no Container
+
+```bash
+# Executar testes
+docker exec eyesonasset-backend pytest
+
+# Executar testes com cobertura
+docker exec eyesonasset-backend pytest --cov=app --cov-report=term-missing
+
+# Abrir shell no container
+docker exec -it eyesonasset-backend bash
+
+# Ver banco de dados
+docker exec eyesonasset-backend ls -lh eyesonasset.db
+```
+
+### Banco de Dados
+
+```bash
+# Verificar se o banco existe
+docker exec eyesonasset-backend ls -lh eyesonasset.db
+
+# Backup do banco de dados
+docker cp eyesonasset-backend:/app/eyesonasset.db ./backup_$(date +%Y%m%d_%H%M%S).db
+
+# Restaurar backup
+docker cp backup_YYYYMMDD_HHMMSS.db eyesonasset-backend:/app/eyesonasset.db
+
+# Remover banco (cuidado!)
+docker exec eyesonasset-backend rm eyesonasset.db
+```
+
+### Health Check
+
+```bash
+# Verificar se a API está respondendo
+curl http://localhost:8000/
+
+# Criar primeiro usuário
+curl -X POST "http://localhost:8000/integrations/cadastro" \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"Admin123@"}'
+
+# Fazer login
+curl -X POST "http://localhost:8000/integrations/login" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "username=admin&password=Admin123@"
+```
+
+## 📚 Documentação da API
+
+Após iniciar o servidor, acesse:
+
+- **Swagger UI**: http://localhost:8000/docs
+- **ReDoc**: http://localhost:8000/redoc
+
+## 🗄️ Estrutura do Banco de Dados
+
+O sistema utiliza SQLite com as seguintes tabelas:
+
+### Tabela: `users` (Usuários)
+
+| Campo | Tipo | Descrição |
+|-------|------|-----------|
+| id | VARCHAR(36) | UUID gerado automaticamente |
+| username | VARCHAR(140) | Nome de usuário (obrigatório, único) |
+| hashed_password | VARCHAR | Hash bcrypt da senha (obrigatório) |
+
+### Tabela: `owners` (Responsáveis)
+
+| Campo | Tipo | Descrição |
+|-------|------|-----------|
+| id | VARCHAR(36) | UUID gerado automaticamente |
+| name | VARCHAR(140) | Nome completo (obrigatório) |
+| email | VARCHAR(140) | Email corporativo (obrigatório, único) |
+| phone | VARCHAR(20) | Telefone (obrigatório) |
+
+### Tabela: `assets` (Ativos)
+
+| Campo | Tipo | Descrição |
+|-------|------|-----------|
+| id | VARCHAR(36) | UUID gerado automaticamente |
+| name | VARCHAR(140) | Nome do ativo (obrigatório) |
+| category | VARCHAR(60) | Categoria do ativo (obrigatório) |
+| owner | VARCHAR(36) | FK para owners.id (CASCADE DELETE) |
+
+## 🛣️ Rotas da API
+
+### 🔐 Autenticação
+
+Todas as rotas da API (exceto `/integrations/login` e `/integrations/cadastro`) requerem um token JWT válido no header `Authorization`.
+
+#### POST /integrations/cadastro
+Endpoint para criar novos usuários.
+
+**Request Body (JSON):**
+```json
+{
+  "username": "seu_usuario",
+  "password": "SuaSenha123@"
+}
+```
+
+**Response (201):**
+```json
+{
+  "id": "uuid-gerado-automaticamente",
+  "username": "seu_usuario"
+}
+```
+
+#### POST /integrations/login
+Endpoint de autenticação que retorna um token JWT.
+
+**Request Body (Form Data):**
+```
+username=seu_usuario
+password=SuaSenha123@
+```
+
+**Response (200):**
+```json
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token_type": "bearer",
+  "expires_in": 3600
+}
+```
+
+**⚠️ Importante:**
+- O token expira em **60 minutos (3600 segundos)**
+- Use o token no header: `Authorization: Bearer {token}`
+- Crie seu primeiro usuário usando `/integrations/cadastro`
+
+**Exemplo completo:**
+```bash
+# 1. Criar usuário
+curl -X POST "http://localhost:8000/integrations/cadastro" \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"Admin123@"}'
+
+# 2. Fazer login
+curl -X POST "http://localhost:8000/integrations/login" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "username=admin&password=Admin123@"
+
+# 3. Usar o token nas requisições
+curl -X GET "http://localhost:8000/integrations/owners" \
+  -H "Authorization: Bearer {seu-token-aqui}"
+```
+
+### Owners (Responsáveis)
+
+**⚠️ Todas as rotas abaixo requerem autenticação JWT**
+
+#### POST /integrations/owner
+Cria um novo responsável.
+
+**Request Body:**
+```json
+{
+  "name": "João da Silva",
+  "email": "joao.silva@empresa.com",
+  "phone": "+55 11 98765-4321"
+}
+```
+
+**Response (201):**
+```json
+{
+  "id": "uuid-gerado-automaticamente",
+  "name": "João da Silva",
+  "email": "joao.silva@empresa.com",
+  "phone": "+55 11 98765-4321"
+}
+```
+
+#### GET /integrations/owner/{owner_id}
+Busca um responsável por ID.
+
+**Response (200):**
+```json
+{
+  "id": "uuid-do-owner",
+  "name": "João da Silva",
+  "email": "joao.silva@empresa.com",
+  "phone": "+55 11 98765-4321"
+}
+```
+
+#### GET /integrations/owners
+Lista todos os responsáveis (com paginação).
+
+**Query Parameters:**
+- `skip`: Número de registros a pular (padrão: 0)
+- `limit`: Número máximo de registros (padrão: 100)
+
+#### PUT /integrations/owner/{owner_id}
+Atualiza um responsável existente.
+
+**Request Body (campos opcionais):**
+```json
+{
+  "name": "João da Silva Jr.",
+  "phone": "+55 11 99999-9999"
+}
+```
+
+#### DELETE /integrations/owner/{owner_id}
+Deleta um responsável e todos os seus ativos (CASCADE DELETE).
+
+**Response:** 204 No Content
+
+⚠️ **ATENÇÃO**: Esta operação também deletará todos os ativos associados a este responsável.
+
+### Assets (Ativos)
+
+**⚠️ Todas as rotas abaixo requerem autenticação JWT**
+
+#### POST /integrations/asset
+Cria um novo ativo.
+
+**Request Body:**
+```json
+{
+  "name": "Aeronave Boeing 737",
+  "category": "Aeronave",
+  "owner": "uuid-do-owner"
+}
+```
+
+**Response (201):**
+```json
+{
+  "id": "uuid-gerado-automaticamente",
+  "name": "Aeronave Boeing 737",
+  "category": "Aeronave",
+  "owner": "uuid-do-owner"
+}
+```
+
+#### GET /integrations/asset/{asset_id}
+Busca um ativo por ID.
+
+#### GET /integrations/assets
+Lista todos os ativos (com paginação).
+
+**Query Parameters:**
+- `skip`: Número de registros a pular (padrão: 0)
+- `limit`: Número máximo de registros (padrão: 100)
+
+#### PUT /integrations/asset/{asset_id}
+Atualiza um ativo existente.
+
+**Request Body (campos opcionais):**
+```json
+{
+  "name": "Aeronave Boeing 777",
+  "category": "Aeronave Comercial"
+}
+```
+
+#### DELETE /integrations/asset/{asset_id}
+Deleta um ativo.
+
+**Response:** 204 No Content
+
+### Users (Usuários)
+
+**⚠️ Apenas o próprio usuário pode atualizar ou deletar sua conta**
+
+#### PUT /integrations/user
+Atualiza os dados do usuário autenticado.
+
+**Request Body:**
+```json
+{
+  "username": "novo_username",
+  "password": "nova_senha"
+}
+```
+
+#### DELETE /integrations/user
+Deleta a conta do usuário autenticado.
+
+**Response:** 204 No Content
+
+## ✅ Funcionalidades Implementadas
+
+### Nível 1 - Validação ✓
+- [x] Validação completa de dados com Pydantic
+- [x] Mensagens de erro claras e específicas
+- [x] Validação de tipos (UUID, strings com limites)
+- [x] Campos obrigatórios
+- [x] Validação de email
+
+### Nível 2 - Persistência ✓
+- [x] Integração com SQLAlchemy
+- [x] Banco de dados SQLite
+- [x] IDs gerados automaticamente (UUID)
+- [x] CRUD completo para Assets
+- [x] CRUD completo para Owners
+- [x] Relacionamento entre tabelas (Foreign Key)
+- [x] **CASCADE DELETE**: Deletar owner deleta automaticamente seus assets
+- [x] Validação de email único
+- [x] Paginação em listagens
+
+### Nível 3 - Testes ✓
+- [x] Testes para modelos, schemas e serviços
+- [x] Testes para rotas da API
+- [x] Testes de autenticação JWT
+- [x] Banco de dados em memória para testes
+
+### Nível 4 - Autenticação JWT ✓
+- [x] Autenticação via token JWT (HS256)
+- [x] Proteção de rotas (exceto /integrations/login e /integrations/cadastro)
+- [x] Expiração de tokens (60 minutos)
+- [x] Validação de tokens inválidos/expirados
+
+### Nível 5 - Usuários ✓
+- [x] Entidade User com hash bcrypt
+- [x] Autenticação via banco de dados
+- [x] Endpoints de cadastro e login
+- [x] Hash seguro de senhas
+
+### Nível 6 - Infraestrutura ✓
+- [x] Dockerfile otimizado
+- [x] docker-compose.yaml
+- [x] Documentação completa
+
+## 🧪 Testes
+
+### Executar todos os testes
+
+```bash
+# No diretório backend
+pytest
+```
+
+### Executar testes com cobertura detalhada
+
+```bash
+pytest --cov=app --cov-report=html --cov-report=term-missing
+```
+
+Após executar, abra `htmlcov/index.html` no navegador para visualizar o relatório detalhado de cobertura.
+
+### Executar testes específicos
+
+```bash
+# Apenas testes de modelos
+pytest tests/test_models.py
+
+# Apenas testes de schemas
+pytest tests/test_schemas.py
+
+# Apenas testes de serviços
+pytest tests/test_services.py
+
+# Apenas testes de API
+pytest tests/test_api_owners.py tests/test_api_assets.py
+
+# Um teste específico
+pytest tests/test_models.py::TestOwnerModel::test_create_owner
+```
+
+### Estrutura dos Testes
+
+```
+tests/
+├── conftest.py              # Fixtures compartilhadas (cria user padrão)
+├── test_models.py           # Testes dos modelos SQLAlchemy (11 testes)
+├── test_schemas.py          # Testes dos schemas Pydantic (14 testes)
+├── test_services.py         # Testes da camada de serviço (19 testes)
+├── test_user_service.py     # Testes do UserService (16 testes)
+├── test_api_owners.py       # Testes das rotas de owners (15 testes)
+├── test_api_assets.py       # Testes das rotas de assets (16 testes)
+├── test_api_users.py        # Testes das rotas de users (18 testes)
+└── test_auth.py             # Testes de autenticação JWT (18 testes)
+```
+
+### Cobertura de Testes
+
+**Total: 111 testes passando**
+
+| Módulo | Testes |
+|--------|--------|
+| **Models** | 11 testes |
+| **Schemas** | 14 testes |
+| **Services** | 35 testes (Owner, Asset, User) |
+| **API Routes** | 33 testes |
+| **Auth** | 18 testes |
+
+### O que é testado
+
+#### ✅ Modelos (test_models.py)
+- Criação de registros
+- Geração automática de UUIDs
+- Validação de campos obrigatórios
+- Constraint de email único
+- CASCADE DELETE (deletar owner deleta assets)
+- Foreign key constraints
+- Representação string (`__repr__`)
+
+#### ✅ Schemas (test_schemas.py)
+- Validação de dados de entrada
+- Validação de email
+- Limites de caracteres (name: 140, category: 60)
+- Campos obrigatórios
+- Atualização parcial (campos opcionais)
+- Schemas de resposta com ID
+
+#### ✅ Services (test_services.py)
+- CRUD completo (Create, Read, Update, Delete)
+- Paginação (skip/limit)
+- Email único para owners
+- Validação de owner existente ao criar asset
+- Retorno None para registros não encontrados
+
+#### ✅ API - Owners (test_api_owners.py)
+- `POST /integrations/owner` - Criar owner
+- `GET /integrations/owner/{id}` - Buscar owner
+- `GET /integrations/owners` - Listar owners com paginação
+- `PUT /integrations/owner/{id}` - Atualizar owner
+- `DELETE /integrations/owner/{id}` - Deletar owner (CASCADE)
+- Validações de email duplicado
+- Códigos HTTP corretos (201, 200, 204, 404, 400, 422)
+
+#### ✅ API - Assets (test_api_assets.py)
+- `POST /integrations/asset` - Criar asset
+- `GET /integrations/asset/{id}` - Buscar asset
+- `GET /integrations/assets` - Listar assets com paginação
+- `PUT /integrations/asset/{id}` - Atualizar asset
+- `DELETE /integrations/asset/{id}` - Deletar asset
+- Validação de owner existente
+- Validação de limites de caracteres
+- Relacionamento com owner
+
+### Fixtures Disponíveis
+
+```python
+# Sessão de banco de dados em memória (isolada para cada teste)
+# Cria automaticamente o usuário padrão (eyesonasset/eyesonasset)
+def test_example(db_session):
+    ...
+
+# Cliente de teste da API
+def test_example(client):
+    response = client.get("/integrations/owners")
+    ...
+
+# Headers com token JWT válido
+def test_example(auth_headers):
+    response = client.post("/integrations/owner", json=data, headers=auth_headers)
+    ...
+
+# Owner já criado no banco
+def test_example(created_owner):
+    owner_id = created_owner["id"]
+    ...
+
+# Asset já criado no banco (com owner)
+def test_example(created_asset):
+    asset_id = created_asset["id"]
+    ...
+```
+
+
+
+## 🏗️ Estrutura do Projeto
+
+```
+backend/
+├── app/
+│   ├── __init__.py
+│   ├── main.py                 # Aplicação principal FastAPI
+│   ├── api/
+│   │   └── v1/
+│   │       ├── __init__.py
+│   │       ├── auth.py         # Autenticação JWT
+│   │       ├── users.py        # Rotas de usuários (CRUD)
+│   │       ├── assets.py       # Rotas de assets
+│   │       └── owners.py       # Rotas de owners
+│   ├── core/
+│   │   ├── auth.py            # Middleware JWT
+│   │   ├── config.py          # Configurações da aplicação
+│   │   └── security.py        # JWT + bcrypt utilities
+│   ├── db/
+│   │   ├── base.py            # Configuração do SQLAlchemy
+│   │   ├── sessions.py        # Dependency de sessão do DB
+│   │   └── models/
+│   │       ├── __init__.py
+│   │       ├── user.py        # Modelo User
+│   │       ├── asset.py       # Modelo Asset
+│   │       └── owner.py       # Modelo Owner
+│   ├── schemas/
+│   │   ├── __init__.py
+│   │   ├── auth.py           # Schemas de autenticação
+│   │   ├── user.py           # Schemas Pydantic de User
+│   │   ├── asset.py          # Schemas Pydantic de Asset
+│   │   └── owner.py          # Schemas Pydantic de Owner
+│   └── services/
+│       ├── user_service.py   # Lógica de negócio de Users
+│       ├── asset_service.py  # Lógica de negócio de Assets
+│       └── owner_service.py  # Lógica de negócio de Owners
+├── tests/
+│   ├── __init__.py
+│   ├── conftest.py           # Fixtures compartilhadas
+│   ├── test_auth.py          # Testes de autenticação (18 testes)
+│   ├── test_models.py        # Testes dos modelos (11 testes)
+│   ├── test_schemas.py       # Testes dos schemas (14 testes)
+│   ├── test_services.py      # Testes dos serviços (19 testes)
+│   ├── test_user_service.py  # Testes UserService (16 testes)
+│   ├── test_api_users.py     # Testes API users (18 testes)
+│   ├── test_api_owners.py    # Testes API owners (15 testes)
+│   └── test_api_assets.py    # Testes API assets (16 testes)
+├── Dockerfile                # Imagem Docker da aplicação
+├── docker-compose.yaml       # Orquestração de containers
+├── .dockerignore            # Arquivos ignorados no build
+├── .env.example             # Exemplo de variáveis de ambiente
+├── pytest.ini               # Configuração do pytest
+├── requirements.txt         # Dependências Python
+├── create_default_user.py   # Script de criação do usuário padrão
+├── SETUP.md                 # Guia completo de setup e deploy
+└── eyesonasset.db           # Banco de dados SQLite (gerado automaticamente)
+```
+
+## 🐳 Docker
+
+### Comandos Principais
+
+```bash
+# Build e iniciar
+docker-compose up --build -d
+
+# Ver logs
+docker-compose logs -f backend
+
+# Executar comandos no container
+docker-compose exec backend python create_default_user.py
+
+# Parar containers
+docker-compose down
+
+# Executar testes
+docker-compose run --rm backend pytest tests/ -v --cov=app
+```
+
+### Estrutura Docker
+
+- **Dockerfile**: Imagem base Python 3.10-slim com otimizações
+- **docker-compose.yaml**: Serviços backend + testes
+- **Volume persistente**: Banco de dados mantido em `./data`
+- **Hot reload**: Código sincronizado para desenvolvimento
+- **Health checks**: Monitoramento automático de saúde
+
+## 🔍 Troubleshooting
+
+### Problemas Comuns
+
+**1. Erro "Container não inicia"**
+```bash
+# Ver logs de erro
+docker logs eyesonasset-backend
+
+# Rebuild completo
+docker-compose down -v
+docker-compose up --build
+```
+
+**2. Erro "Credenciais inválidas"**
+```bash
+# Criar novo usuário pelo endpoint de cadastro
+curl -X POST "http://localhost:8000/integrations/cadastro" \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"Admin123@"}'
+```
+
+**3. Erro "Database is locked"**
+```bash
+# Parar container, remover banco e recriar
+docker compose down
+rm eyesonasset.db
+docker compose up -d
+```
+
+**4. Frontend não consegue conectar**
+```bash
+# Verificar se backend está rodando
+curl http://localhost:8000/docs
+
+# Verificar CORS nos logs
+docker logs eyesonasset-backend --tail 50 | grep CORS
+```
+
+**5. Token expira muito rápido**
+- Token configurado para expirar em 60 minutos
+- Verifique `ACCESS_TOKEN_EXPIRE_MINUTES` em `app/core/config.py`
+
+## 🔍 Detalhes Técnicos
+
+### Cascade Delete
+O sistema implementa CASCADE DELETE através de:
+
+1. **Modelo Owner** (`app/db/models/owner.py`):
+```python
+assets = relationship(
+    "Asset",
+    back_populates="owner_rel",
+    cascade="all, delete-orphan",
+    passive_deletes=True
+)
+```
+
+2. **Modelo Asset** (`app/db/models/asset.py`):
+```python
+owner = Column(
+    String(36), 
+    ForeignKey("owners.id", ondelete="CASCADE"), 
+    nullable=False
+)
+```
+
+Isso garante que ao deletar um Owner, todos os seus Assets sejam automaticamente deletados.
+
+### Validações
+- Email único (constraint no banco + validação na camada de serviço)
+- Owner deve existir ao criar/atualizar Asset
+- Todos os campos obrigatórios validados
+- Limites de caracteres respeitados
+
+---
+
+## 📊 Estatísticas do Projeto
+
+- **Testes**: 111 testes passando
+- **Endpoints**: 12 (prefixo /integrations/)
+- **Modelos**: 3 (Owner, Asset, User)
+- **Token expiration**: 60 minutos
+- **Banco de dados**: SQLite com UUIDs
+
+## 🎯 Para Começar Rapidamente
+
+### Primeira execução (com Docker)
+
+```bash
+# 1. Build e iniciar
+cd backend
+docker compose up -d --build
+
+# 2. Verificar se está funcionando
+curl http://localhost:8000/
+
+# 3. Criar primeiro usuário
+curl -X POST "http://localhost:8000/integrations/cadastro" \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"Admin123@"}'
+
+# 4. Fazer login
+curl -X POST "http://localhost:8000/integrations/login" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "username=admin&password=Admin123@"
+```
+
+### Acompanhar logs em tempo real
+
+```bash
+# Ver todas as requisições
+docker logs eyesonasset-backend -f
+
+# Ver apenas erros
+docker logs eyesonasset-backend -f 2>&1 | grep -i error
+```
+
+**✅ Pronto!** Backend rodando em `http://localhost:8000`
+
+- **Swagger UI**: http://localhost:8000/docs
+- **ReDoc**: http://localhost:8000/redoc
+
+---
+
+**Desenvolvido com FastAPI, SQLAlchemy e Docker**
