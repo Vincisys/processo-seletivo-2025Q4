@@ -25,7 +25,10 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    // Não redirecionar se for erro na rota de login ou cadastro
+    const isAuthRoute = error.config?.url?.includes('/login') || error.config?.url?.includes('/cadastro');
+    
+    if (error.response?.status === 401 && !isAuthRoute) {
       // Token expirado ou inválido
       localStorage.removeItem('eyesonasset_token');
       localStorage.removeItem('eyesonasset_user');
