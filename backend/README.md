@@ -44,7 +44,7 @@ docker-compose build
 docker-compose up -d
 
 # 3. Criar usuário padrão
-docker-compose exec backend python create_default_user.py
+docker exec eyesonasset-backend python create_default_user.py
 
 # 4. Acessar documentação
 # http://localhost:8000/docs
@@ -69,6 +69,100 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 **📖 Para instruções detalhadas, consulte [SETUP.md](SETUP.md)**
+
+## 📝 Comandos Essenciais
+
+### Gerenciamento do Container
+
+```bash
+# Iniciar o backend
+docker-compose up -d
+
+# Parar o backend
+docker-compose down
+
+# Reiniciar o backend
+docker-compose restart
+
+# Ver status dos containers
+docker ps
+
+# Rebuild após mudanças
+docker-compose up -d --build
+```
+
+### Logs e Debugging
+
+```bash
+# Ver logs em tempo real
+docker logs eyesonasset-backend -f
+
+# Ver últimas 50 linhas dos logs
+docker logs eyesonasset-backend --tail 50
+
+# Ver logs com timestamp
+docker logs eyesonasset-backend -f --timestamps
+
+# Ver apenas erros nos logs (HTTP 4xx/5xx)
+docker logs eyesonasset-backend --tail 100 2>&1 | grep -E "(ERROR|404|500|400)"
+
+# Ver requisições específicas (GET, POST, PUT, DELETE)
+docker logs eyesonasset-backend --tail 100 2>&1 | grep -E "(GET|POST|PUT|DELETE)"
+```
+
+### Execução de Comandos no Container
+
+```bash
+# Criar usuário padrão (username: eyesonasset, password: eyesonasset)
+docker exec eyesonasset-backend python create_default_user.py
+
+# Executar testes
+docker exec eyesonasset-backend pytest
+
+# Executar testes com cobertura
+docker exec eyesonasset-backend pytest --cov=app --cov-report=term-missing
+
+# Abrir shell no container
+docker exec -it eyesonasset-backend bash
+
+# Ver arquivos no container
+docker exec eyesonasset-backend ls -la
+
+# Ver banco de dados
+docker exec eyesonasset-backend ls -lh eyesonasset.db
+```
+
+### Banco de Dados
+
+```bash
+# Verificar se o banco existe
+docker exec eyesonasset-backend ls -lh eyesonasset.db
+
+# Backup do banco de dados
+docker cp eyesonasset-backend:/app/eyesonasset.db ./backup_$(date +%Y%m%d_%H%M%S).db
+
+# Restaurar backup
+docker cp backup_YYYYMMDD_HHMMSS.db eyesonasset-backend:/app/eyesonasset.db
+
+# Remover banco (cuidado!)
+docker exec eyesonasset-backend rm eyesonasset.db
+```
+
+### Health Check
+
+```bash
+# Verificar se a API está respondendo
+curl http://localhost:8000/docs
+
+# Teste de autenticação
+curl -X POST "http://localhost:8000/login" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "username=eyesonasset&password=eyesonasset"
+
+# Listar owners (requer token)
+curl -X GET "http://localhost:8000/owners" \
+  -H "Authorization: Bearer SEU_TOKEN_AQUI"
+```
 
 ## 📚 Documentação da API
 
@@ -111,19 +205,21 @@ O sistema utiliza SQLite com as seguintes tabelas:
 
 ### 🔐 Autenticação
 
-Todas as rotas da API (exceto a rota de autenticação) requerem um token JWT válido no header `Authorization`.
+Todas as rotas da API (exceto `/login` e `/cadastro`) requerem um token JWT válido no header `Authorization`.
 
-#### POST /integrations/auth
+#### POST /login
 Endpoint de autenticação que retorna um token JWT.
 
 **Credenciais padrão:**
 - Username: `eyesonasset`
 - Password: `eyesonasset`
 
-**Request Body (form-data):**
-```
-login: eyesonasset
-password: eyesonasset
+**Request Body (JSON):**
+```json
+{
+  "username": "eyesonasset",
+  "password": "eyesonasset"
+}
 ```
 
 **Response (200):**
@@ -131,7 +227,7 @@ password: eyesonasset
 {
   "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
   "token_type": "bearer",
-  "expires_in": 60
+  "expires_in": 3600
 }
 ```
 
@@ -142,20 +238,39 @@ password: eyesonasset
 }
 ```
 
+#### POST /cadastro
+Endpoint de registro de novos usuários.
+
+**Request Body (JSON):**
+```json
+{
+  "username": "novo_usuario",
+  "password": "senha_segura"
+}
+```
+
+**Response (201):**
+```json
+{
+  "id": "uuid-gerado-automaticamente",
+  "username": "novo_usuario"
+}
+```
+
 **⚠️ Importante:**
-- O token expira em **60 segundos (1 minuto)**
+- O token expira em **60 minutos (3600 segundos)**
 - Use o token no header: `Authorization: Bearer {token}`
-- Credenciais fixas: `login=eyesonasset`, `password=eyesonasset`
+- Credenciais padrão: `username=eyesonasset`, `password=eyesonasset`
 
 **Exemplo de uso com curl:**
 ```bash
 # 1. Obter o token
-curl -X POST "http://localhost:8000/integrations/auth" \
-  -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "login=eyesonasset&password=eyesonasset"
+curl -X POST "http://localhost:8000/login" \
+  -H "Content-Type: application/json" \
+  -d '{"username":"eyesonasset","password":"eyesonasset"}'
 
 # 2. Usar o token nas requisições
-curl -X GET "http://localhost:8000/integrations/owners" \
+curl -X GET "http://localhost:8000/owners" \
   -H "Authorization: Bearer {seu-token-aqui}"
 ```
 
@@ -165,15 +280,15 @@ import requests
 
 # 1. Autenticar
 response = requests.post(
-    "http://localhost:8000/integrations/auth",
-    data={"login": "eyesonasset", "password": "eyesonasset"}
+    "http://localhost:8000/login",
+    json={"username": "eyesonasset", "password": "eyesonasset"}
 )
 token = response.json()["access_token"]
 
 # 2. Usar o token
 headers = {"Authorization": f"Bearer {token}"}
 response = requests.get(
-    "http://localhost:8000/integrations/owners",
+    "http://localhost:8000/owners",
     headers=headers
 )
 ```
@@ -182,7 +297,7 @@ response = requests.get(
 
 **⚠️ Todas as rotas abaixo requerem autenticação JWT**
 
-#### POST /integrations/owner
+#### POST /owner
 Cria um novo responsável.
 
 **Request Body:**
@@ -204,7 +319,7 @@ Cria um novo responsável.
 }
 ```
 
-#### GET /integrations/owner/{owner_id}
+#### GET /owner/{owner_id}
 Busca um responsável por ID.
 
 **Response (200):**
@@ -217,14 +332,14 @@ Busca um responsável por ID.
 }
 ```
 
-#### GET /integrations/owners
+#### GET /owners
 Lista todos os responsáveis (com paginação).
 
 **Query Parameters:**
 - `skip`: Número de registros a pular (padrão: 0)
 - `limit`: Número máximo de registros (padrão: 100)
 
-#### PUT /integrations/owner/{owner_id}
+#### PUT /owner/{owner_id}
 Atualiza um responsável existente.
 
 **Request Body (campos opcionais):**
@@ -235,7 +350,7 @@ Atualiza um responsável existente.
 }
 ```
 
-#### DELETE /integrations/owner/{owner_id}
+#### DELETE /owner/{owner_id}
 Deleta um responsável e todos os seus ativos (CASCADE DELETE).
 
 **Response:** 204 No Content
@@ -246,7 +361,7 @@ Deleta um responsável e todos os seus ativos (CASCADE DELETE).
 
 **⚠️ Todas as rotas abaixo requerem autenticação JWT**
 
-#### POST /integrations/asset
+#### POST /asset
 Cria um novo ativo.
 
 **Request Body:**
@@ -268,17 +383,17 @@ Cria um novo ativo.
 }
 ```
 
-#### GET /integrations/asset/{asset_id}
+#### GET /asset/{asset_id}
 Busca um ativo por ID.
 
-#### GET /integrations/assets
+#### GET /assets
 Lista todos os ativos (com paginação).
 
 **Query Parameters:**
 - `skip`: Número de registros a pular (padrão: 0)
 - `limit`: Número máximo de registros (padrão: 100)
 
-#### PUT /integrations/asset/{asset_id}
+#### PUT /asset/{asset_id}
 Atualiza um ativo existente.
 
 **Request Body (campos opcionais):**
@@ -289,8 +404,28 @@ Atualiza um ativo existente.
 }
 ```
 
-#### DELETE /integrations/asset/{asset_id}
+#### DELETE /asset/{asset_id}
 Deleta um ativo.
+
+**Response:** 204 No Content
+
+### Users (Usuários)
+
+**⚠️ Apenas o próprio usuário pode atualizar ou deletar sua conta**
+
+#### PUT /user
+Atualiza os dados do usuário autenticado.
+
+**Request Body:**
+```json
+{
+  "username": "novo_username",
+  "password": "nova_senha"
+}
+```
+
+#### DELETE /user
+Deleta a conta do usuário autenticado.
 
 **Response:** 204 No Content
 
@@ -568,7 +703,7 @@ backend/
 ├── requirements.txt         # Dependências Python
 ├── create_default_user.py   # Script de criação do usuário padrão
 ├── SETUP.md                 # Guia completo de setup e deploy
-└── assets.db               # Banco de dados SQLite (gerado automaticamente)
+└── eyesonasset.db           # Banco de dados SQLite (gerado automaticamente)
 ```
 
 ## 🐳 Docker
@@ -599,6 +734,48 @@ docker-compose run --rm backend pytest tests/ -v --cov=app
 - **Volume persistente**: Banco de dados mantido em `./data`
 - **Hot reload**: Código sincronizado para desenvolvimento
 - **Health checks**: Monitoramento automático de saúde
+
+## 🔍 Troubleshooting
+
+### Problemas Comuns
+
+**1. Erro "Container não inicia"**
+```bash
+# Ver logs de erro
+docker logs eyesonasset-backend
+
+# Rebuild completo
+docker-compose down -v
+docker-compose up --build
+```
+
+**2. Erro "Credenciais inválidas"**
+```bash
+# Recriar usuário padrão
+docker exec eyesonasset-backend python create_default_user.py
+```
+
+**3. Erro "Database is locked"**
+```bash
+# Parar container, remover banco e recriar
+docker-compose down
+rm backend/eyesonasset.db
+docker-compose up -d
+docker exec eyesonasset-backend python create_default_user.py
+```
+
+**4. Frontend não consegue conectar**
+```bash
+# Verificar se backend está rodando
+curl http://localhost:8000/docs
+
+# Verificar CORS nos logs
+docker logs eyesonasset-backend --tail 50 | grep CORS
+```
+
+**5. Token expira muito rápido**
+- Token configurado para expirar em 60 minutos
+- Verifique `ACCESS_TOKEN_EXPIRE_MINUTES` em `app/core/config.py`
 
 ## 🔍 Detalhes Técnicos
 
@@ -632,19 +809,61 @@ Isso garante que ao deletar um Owner, todos os seus Assets sejam automaticamente
 - Todos os campos obrigatórios validados
 - Limites de caracteres respeitados
 
-## 📝 Próximos Passos
-
-- [ ] Nível 4: Autenticação JWT
-- [ ] Nível 5: Usuários e login via banco
-- [ ] Nível 6: Docker e documentação completa
-
 ---
 
 ## 📊 Estatísticas do Projeto
 
 - **Linhas de código**: ~1.500
-- **Testes**: 75
-- **Cobertura**: 91%
-- **Endpoints**: 10 (5 owners + 5 assets)
+- **Testes**: 127
+- **Cobertura**: 94%
+- **Endpoints**: 12 (/login, /cadastro, /owner, /owners, /asset, /assets, /user)
 - **Modelos**: 3 (Owner, Asset, User)
 - **Tempo de execução dos testes**: ~1.6s
+- **Token expiration**: 60 minutos
+- **Banco de dados**: eyesonasset.db (SQLite com UUIDs)
+
+## 🎯 Para Começar Rapidamente
+
+### Primeira execução (com Docker)
+
+```bash
+# 1. Clonar repositório (se ainda não clonou)
+cd backend
+
+# 2. Build e iniciar
+docker-compose up -d --build
+
+# 3. Criar usuário padrão
+docker exec eyesonasset-backend python create_default_user.py
+
+# 4. Verificar se está funcionando
+curl http://localhost:8000/docs
+
+# 5. Fazer login de teste
+curl -X POST "http://localhost:8000/login" \
+  -H "Content-Type: application/json" \
+  -d '{"username":"eyesonasset","password":"eyesonasset"}'
+```
+
+### Acompanhar logs em tempo real
+
+```bash
+# Ver todas as requisições
+docker logs eyesonasset-backend -f
+
+# Ver apenas erros
+docker logs eyesonasset-backend -f 2>&1 | grep -i error
+```
+
+**✅ Pronto!** Backend rodando em `http://localhost:8000`
+
+### 📚 Documentação Adicional
+
+- **[Checklist de Primeira Execução](../CHECKLIST.md)** - Guia passo a passo
+- **[Comandos Rápidos](../COMMANDS.md)** - Referência rápida
+- **[Troubleshooting](../TROUBLESHOOTING.md)** - Solução de problemas
+- **[README Principal](../README.md)** - Visão geral do projeto
+
+---
+
+**Desenvolvido com ❤️ usando FastAPI, SQLAlchemy e Docker**

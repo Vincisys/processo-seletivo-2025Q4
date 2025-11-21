@@ -68,7 +68,7 @@ clean: ## Limpar arquivos temporários e cache
 	rm -rf htmlcov .coverage coverage.xml
 
 clean-db: ## Remover banco de dados SQLite
-	rm -f assets.db data/assets.db
+	rm -f eyesonasset.db data/eyesonasset.db
 
 # ==================== Desenvolvimento ====================
 
@@ -91,7 +91,7 @@ logs-tail: ## Ver últimas 100 linhas dos logs
 	docker-compose logs --tail=100 backend
 
 db-shell: ## Abrir shell do SQLite (local)
-	sqlite3 assets.db
+	sqlite3 eyesonasset.db
 
 docker-db-shell: ## Abrir shell do SQLite (Docker)
-	docker-compose exec backend sqlite3 data/assets.db
+	docker-compose exec backend sqlite3 data/eyesonasset.db

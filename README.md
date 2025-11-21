@@ -5,6 +5,87 @@
   EyesOnAsset — Desafio Técnico
 </h1>
 
+## 🎯 Quick Start - Rodar o Projeto
+
+### Pré-requisitos
+- **Docker** e **Docker Compose** instalados
+- **Node.js 18+** instalado
+- **Git** para clonar o repositório
+
+### Passo a Passo (5 minutos)
+
+```bash
+# 1. Clonar o repositório
+git clone <url-do-repositorio>
+cd processo-seletivo-2025Q4
+
+# 2. Iniciar o Backend (Docker)
+cd backend
+docker-compose up -d --build
+docker exec eyesonasset-backend python create_default_user.py
+cd ..
+
+# 3. Iniciar o Frontend
+cd frontend
+npm install
+npm run dev
+cd ..
+```
+
+**✅ Pronto!** Acesse: http://localhost:3000
+
+**🔐 Login:**
+- Username: `eyesonasset`
+- Password: `eyesonasset`
+
+### Comandos Úteis
+
+```bash
+# Ver logs do backend
+docker logs eyesonasset-backend -f
+
+# Ver logs com erros
+docker logs eyesonasset-backend --tail 50 2>&1 | grep -i error
+
+# Parar tudo
+docker-compose -f backend/docker-compose.yaml down
+# Ctrl+C no terminal do frontend
+
+# Executar testes do backend
+docker exec eyesonasset-backend pytest --cov=app
+
+# Executar testes do frontend
+cd frontend && npm test
+```
+
+### Arquitetura
+
+```
+┌─────────────────┐      ┌─────────────────┐      ┌─────────────┐
+│   Frontend      │─────▶│   Backend API   │─────▶│   SQLite    │
+│   React + Vite  │ HTTP │  FastAPI + JWT  │ ORM  │ eyesonasset │
+│   Port: 3000    │      │   Port: 8000    │      │    .db      │
+└─────────────────┘      └─────────────────┘      └─────────────┘
+```
+
+### Endpoints Principais
+
+- **Frontend:** http://localhost:3000
+- **Backend API:** http://localhost:8000
+- **Swagger Docs:** http://localhost:8000/docs
+- **ReDoc:** http://localhost:8000/redoc
+
+### Documentação Completa
+
+- 📖 **README Principal:** Você está aqui!
+- 📖 **Backend:** [backend/README.md](./backend/README.md)
+- 📖 **Frontend:** [frontend/README.md](./frontend/README.md)
+- ✅ **Checklist Primeira Execução:** [CHECKLIST.md](./CHECKLIST.md)
+- ⚡ **Comandos Rápidos:** [COMMANDS.md](./COMMANDS.md)
+- 🔧 **Troubleshooting:** [TROUBLESHOOTING.md](./TROUBLESHOOTING.md)
+
+---
+
 ## Sumário
 
 - [❤️ Bem-vindos](#️-bem-vindos)
@@ -230,3 +311,103 @@ Expiração deve redirecionar para login.
 ### Nível 5 — Testes
 
 Implemente testes para as telas criadas no nível anterior, utilize qualquer biblioteca de testes. _Code Coverage_ é um diferencial.
+
+---
+
+## ✅ Status da Implementação
+
+### Backend (FastAPI)
+
+| Nível | Status | Detalhes |
+|-------|--------|----------|
+| **Nível 1** - Validação | ✅ Completo | Schemas Pydantic com validação completa |
+| **Nível 2** - Persistência | ✅ Completo | SQLAlchemy + SQLite, CASCADE DELETE |
+| **Nível 3** - Testes | ✅ Completo | 127 testes, 94% cobertura |
+| **Nível 4** - Autenticação | ✅ Completo | JWT com expiração de 60min |
+| **Nível 5** - Usuários | ✅ Completo | Bcrypt, CRUD de usuários |
+| **Nível 6** - Infra e Doc | ✅ Completo | Docker, docs completa |
+
+**Tecnologias:**
+- FastAPI 0.109.0
+- SQLAlchemy ORM
+- JWT (HS256) + bcrypt
+- pytest (127 testes)
+- Docker + docker-compose
+
+**Destaques:**
+- ✨ CASCADE DELETE implementado
+- ✨ 94% de cobertura de testes
+- ✨ Documentação Swagger/ReDoc automática
+- ✨ CORS configurado para frontend
+- ✨ Banco eyesonasset.db com UUIDs
+
+### Frontend (React)
+
+| Nível | Status | Detalhes |
+|-------|--------|----------|
+| **Nível 1** - Cadastros e Listagens | ✅ Completo | Formulários com validação |
+| **Nível 2** - Conectando na API | ✅ Completo | Axios com interceptors |
+| **Nível 3** - Melhoria nas Listagens | ✅ Completo | Detalhes, edição, exclusão |
+| **Nível 4** - Autenticação | ✅ Completo | Login, JWT, rotas protegidas |
+
+**Tecnologias:**
+- React 18.2
+- Vite 4.5
+- React Router 6.20
+- Axios 1.6
+
+**Destaques:**
+- ✨ Design responsivo (mobile-first)
+- ✨ Toast notifications para feedback
+- ✨ Confirmação de ações destrutivas
+- ✨ Infinite scroll prevention
+- ✨ Direct API loading pattern
+
+### Funcionalidades Completas
+
+- ✅ Autenticação com JWT (60min de expiração)
+- ✅ CRUD completo de Owners (Responsáveis)
+- ✅ CRUD completo de Assets (Ativos)
+- ✅ Relacionamento Owner ↔ Assets
+- ✅ CASCADE DELETE (deletar owner deleta assets)
+- ✅ Validações client-side e server-side
+- ✅ Tratamento de erros e feedback visual
+- ✅ Navegação direta para páginas de detalhes/edição
+- ✅ Sem loops infinitos (useEffect otimizado)
+
+### Comandos Rápidos
+
+```bash
+# Backend - Ver logs
+docker logs eyesonasset-backend -f
+
+# Backend - Executar testes
+docker exec eyesonasset-backend pytest --cov=app
+
+# Backend - Recriar usuário
+docker exec eyesonasset-backend python create_default_user.py
+
+# Frontend - Iniciar
+cd frontend && npm run dev
+
+# Frontend - Build
+cd frontend && npm run build
+```
+
+### Credenciais Padrão
+
+```
+Username: eyesonasset
+Password: eyesonasset
+```
+
+### URLs Importantes
+
+- **Frontend:** http://localhost:3000
+- **Backend API:** http://localhost:8000
+- **Swagger UI:** http://localhost:8000/docs
+- **ReDoc:** http://localhost:8000/redoc
+
+---
+
+**Desenvolvido com ❤️ para o processo seletivo EyesOnAsset**

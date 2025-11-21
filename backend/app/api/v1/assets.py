@@ -7,7 +7,7 @@ from app.services.asset_service import AssetService
 from app.db.sessions import get_db
 from app.core.security import get_current_user
 
-router = APIRouter(prefix="/integrations", tags=["Assets"])
+router = APIRouter(tags=["Assets"])
 
 
 @router.post(

@@ -6,7 +6,7 @@ import os
 
 # Caminho para o banco de dados SQLite
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-DATABASE_URL = f"sqlite:///{os.path.join(BASE_DIR, 'assets.db')}"
+DATABASE_URL = f"sqlite:///{os.path.join(BASE_DIR, 'eyesonasset.db')}"
 
 # Criar engine do SQLAlchemy
 engine = create_engine(

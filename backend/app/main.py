@@ -4,6 +4,7 @@ import sys
 from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1 import api_router
 from app.db.base import engine, Base
 from app.db.models import Asset, Owner  # Importar modelos para criar tabelas
@@ -39,6 +40,15 @@ app = FastAPI(
     description="API for managing physical assets and their owners",
     version="1.0.0",
     lifespan=lifespan
+)
+
+# Configurar CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "http://localhost:5173", "http://165.22.131.75:3000"],  # Frontend URLs
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Incluir rotas da API v1

@@ -6,30 +6,68 @@ from fastapi import APIRouter, HTTPException, status, Form, Depends
 from sqlalchemy.orm import Session
 
 from app.schemas.auth import TokenResponse
+from app.schemas.user import UserCreate, UserResponse
 from app.core.config import settings
 from app.core.security import create_access_token
 from app.services.user_service import UserService
 from app.db.sessions import get_db
 
 
-router = APIRouter(prefix="/integrations", tags=["Authentication"])
+router = APIRouter(tags=["Authentication"])
 
 
-@router.post("/auth", response_model=TokenResponse, status_code=200)
-def login(
-    login: str = Form(...), 
-    password: str = Form(...),
+@router.post(
+    "/cadastro",
+    response_model=UserResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Registrar novo usuário",
+    description="Cria uma nova conta de usuário no sistema."
+)
+def register(
+    user: UserCreate,
     db: Session = Depends(get_db)
 ):
     """
-    Autenticação com username e senha armazenados no banco de dados.
+    Registra um novo usuário no sistema.
     
-    Valida as credenciais contra a tabela de usuários e retorna um token JWT válido por 1 minuto.
+    - **username**: Nome de usuário único (3-140 caracteres)
+    - **password**: Senha (mínimo 6 caracteres)
     
+    A senha é armazenada com hash bcrypt para segurança.
+    Retorna erro 400 se o username já existir.
+    """
+    try:
+        db_user = UserService.create_user(db, user)
+        return UserResponse.model_validate(db_user)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+
+
+@router.post(
+    "/login",
+    response_model=TokenResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Login de usuário",
+    description="Autentica um usuário e retorna um token JWT."
+)
+def login(
+    username: str = Form(..., description="Nome de usuário"),
+    password: str = Form(..., description="Senha do usuário"),
+    db: Session = Depends(get_db)
+):
+    """
+    Autentica um usuário com username e senha.
+    
+    Valida as credenciais contra a tabela de usuários e retorna um token JWT válido por 60 minutos.
     A senha é verificada usando bcrypt hash.
+    
+    Retorna 401 se as credenciais forem inválidas.
     """
     # Autenticar usuário via banco de dados
-    user = UserService.authenticate_user(db, login, password)
+    user = UserService.authenticate_user(db, username, password)
     
     if not user:
         raise HTTPException(

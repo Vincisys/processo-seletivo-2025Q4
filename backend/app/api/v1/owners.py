@@ -7,7 +7,7 @@ from app.services.owner_service import OwnerService
 from app.db.sessions import get_db
 from app.core.security import get_current_user
 
-router = APIRouter(prefix="/integrations", tags=["Owners"])
+router = APIRouter(tags=["Owners"])
 
 
 @router.post(

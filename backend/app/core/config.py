@@ -18,14 +18,10 @@ class Settings:
         "your-secret-key-here-change-in-production-make-it-very-secure"
     )
     ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 1  # 1 minuto conforme requisito
-    
-    # Credenciais fixas (Nível 4)
-    FIXED_LOGIN: str = "eyesonasset"
-    FIXED_PASSWORD: str = "eyesonasset"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60"))  # 60 minutos (1 hora)
     
     # Database
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./assets.db")
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./eyesonasset.db")
 
 
 settings = Settings()

@@ -7,7 +7,7 @@ from .owners import router as owners_router
 from .auth import router as auth_router
 from .users import router as users_router
 
-api_router = APIRouter()
+api_router = APIRouter(prefix="/integrations")
 
 # Incluir rotas de autenticação, users, assets e owners
 api_router.include_router(auth_router)
